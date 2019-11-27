@@ -14,12 +14,11 @@ let package = Package(
         .library(name: "Network", targets: ["Network"])
     ],
     dependencies: [
-        .package(path: "../Data"),
-        .package(path: "../Swallow")
+        .package(url: "git@github.com:vmanot/API.git", .branch("master")),
+        .package(url: "git@github.com:vmanot/CombineX.git", .branch("master"))
     ],
     targets: [
-        .target(name: "Network", dependencies: ["Data", "Swallow"], path: "Sources"),
-        .testTarget(name: "NetworkTests", dependencies: ["Network"], path: "Tests")
+        .target(name: "Network", dependencies: ["API", "CombineX"], path: "Sources"),
     ],
     swiftLanguageVersions: [
         .version("5.1")
