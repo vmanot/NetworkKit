@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPCacheControlType {
+public enum HTTPCacheControlType: Hashable {
     case noCache
     case noStore
     case noTransform

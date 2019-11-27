@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPAuthorizationType: String {
+public enum HTTPAuthorizationType: String, Hashable {
     case basic = "Basic"
     case bearer = "Bearer"
     case digest = "Digest"

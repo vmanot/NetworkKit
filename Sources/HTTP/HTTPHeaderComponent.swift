@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPHeaderComponent {
+public enum HTTPHeaderComponent: Hashable {
     case accept(HTTPMediaType)
     case authorization(HTTPAuthorizationType, String)
     case cacheControl(HTTPCacheControlType)
