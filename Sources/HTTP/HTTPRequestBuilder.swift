@@ -4,7 +4,6 @@
 
 import API
 import CombineX
-import Data
 import Foundation
 
 public protocol HTTPRequestBuilder: RequestBuilder where Request == HTTPRequest {
@@ -25,7 +24,7 @@ extension HTTPRequestBuilder {
     }
     
     public var body: HTTPRequest.Body {
-        JSON.null
+        Data()
     }
     
     public var header: HTTPRequest.Header {
