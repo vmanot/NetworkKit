@@ -19,7 +19,8 @@ public struct HTTPRequest {
     public private(set) var query: Query = [:]
     public private(set) var header: Header = []
     public private(set) var body: HTTPRequestBody?
-    
+    public private(set) var httpShouldHandleCookies: Bool = true
+
     public init(url: URL) {
         self.url = url
     }
@@ -49,11 +50,19 @@ extension HTTPRequest {
         
         return result
     }
-    
-    public func body(_ body: HTTPRequestBody) -> HTTPRequest {
+        
+    public func body(_ body: HTTPRequestBody?) -> HTTPRequest {
         var result = self
         
         result.body = body
+        
+        return result
+    }
+    
+    public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> HTTPRequest {
+        var result = self
+        
+        result.httpShouldHandleCookies = httpShouldHandleCookies
         
         return result
     }
@@ -74,6 +83,7 @@ extension URLRequest {
         self.init(url: components.url!)
         
         httpMethod = request.method?.rawValue
+        httpShouldHandleCookies = request.httpShouldHandleCookies
         
         request.header.forEach { component in
             addValue(component.value, forHTTPHeaderField: component.key)
