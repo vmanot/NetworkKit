@@ -14,6 +14,7 @@ public enum HTTPHeaderComponent: Hashable {
     case origin(String)
     case referer(String)
     case userAgent(HTTPUserAgent)
+    case custom(key: String, value :String)
 
     public var key: String {
         switch self {
@@ -35,6 +36,8 @@ public enum HTTPHeaderComponent: Hashable {
                 return "Referer"
             case .userAgent:
                 return "UserAgent"
+            case let .custom(key, _):
+                return key
         }
     }
 
@@ -58,6 +61,8 @@ public enum HTTPHeaderComponent: Hashable {
                 return referer
             case .userAgent(let userAgent):
                 return userAgent.rawValue
+            case let .custom(_, value):
+                return value
         }
     }
 }

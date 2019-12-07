@@ -20,7 +20,7 @@ public struct HTTPRequest {
     public private(set) var header: Header = []
     public private(set) var body: HTTPRequestBody?
     public private(set) var httpShouldHandleCookies: Bool = true
-
+    
     public init(url: URL) {
         self.url = url
     }
@@ -50,7 +50,7 @@ extension HTTPRequest {
         
         return result
     }
-        
+    
     public func body(_ body: HTTPRequestBody?) -> HTTPRequest {
         var result = self
         
@@ -89,6 +89,10 @@ extension URLRequest {
             addValue(component.value, forHTTPHeaderField: component.key)
         }
         
+        request.body?.requiredHeaderComponents.forEach { component in
+            addValue(component.value, forHTTPHeaderField: component.key)
+        }
+
         if let body = try request.body?.buildEntity() {
             switch body {
                 case .data(let data):
