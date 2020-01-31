@@ -3,7 +3,7 @@
 //
 
 import API
-import CombineX
+import Merge
 import Foundation
 
 public protocol CodableHTTPRequestCoordinator: HTTPRequestBuilder, RequestCoordinator where Self.Output: Decodable {

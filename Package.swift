@@ -15,10 +15,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "git@github.com:vmanot/API.git", .branch("master")),
-        .package(url: "git@github.com:vmanot/CombineX.git", .branch("master"))
+        .package(url: "git@github.com:vmanot/Merge.git", .branch("master"))
     ],
     targets: [
-        .target(name: "Network", dependencies: ["API", "CombineX"], path: "Sources"),
+        .target(name: "Network", dependencies: ["API", "Merge"], path: "Sources"),
     ],
     swiftLanguageVersions: [
         .version("5.1")

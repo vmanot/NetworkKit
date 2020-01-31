@@ -16,7 +16,7 @@ public struct HTTPRequest {
     
     public private(set) var url: URL
     public private(set) var method: HTTPMethod?
-    public private(set) var query: Query = [:]
+    public private(set) var query: Query?
     public private(set) var header: Header = []
     public private(set) var body: HTTPRequestBody?
     public private(set) var httpShouldHandleCookies: Bool = true
@@ -76,8 +76,10 @@ extension URLRequest {
             fatalError()
         }
         
-        components.queryItems = request.query.map { (key, value) in
-            URLQueryItem(name: key, value: value)
+        if let query = request.query {
+            components.queryItems = query.map { (key, value) in
+                URLQueryItem(name: key, value: value)
+            }
         }
         
         self.init(url: components.url!)

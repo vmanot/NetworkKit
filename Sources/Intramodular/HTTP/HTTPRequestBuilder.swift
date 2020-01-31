@@ -3,7 +3,7 @@
 //
 
 import API
-import CombineX
+import Merge
 import Foundation
 
 public protocol HTTPRequestBuilder: RequestBuilder where Request == HTTPRequest {
