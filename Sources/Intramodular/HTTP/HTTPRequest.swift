@@ -11,7 +11,7 @@ public struct HTTPRequest {
     public typealias Query = [String: String?]
     public typealias Header = [HTTPHeaderComponent]
     public typealias Body = HTTPRequestBody
-    public typealias Response = HTTPRequestResponse
+    public typealias Response = HTTPResponse
     public typealias Error = HTTPRequestError
     
     public private(set) var url: URL
@@ -94,7 +94,7 @@ extension URLRequest {
         request.body?.requiredHeaderComponents.forEach { component in
             addValue(component.value, forHTTPHeaderField: component.key)
         }
-
+        
         if let body = try request.body?.buildEntity() {
             switch body {
                 case .data(let data):

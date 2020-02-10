@@ -1,4 +1,10 @@
+//
+// Copyright (c) Vatsal Manot
+//
+
+import Combine
 import Foundation
+import Swift
 
 /// Defines a message in which one or more different sets of data are combined according to the MIME standard.
 /// - SeeAlso: Defined in [RFC 2046, Section 5.1](https://tools.ietf.org/html/rfc2046#section-5.1)
@@ -13,54 +19,24 @@ public struct HTTPMultipartContent {
     /// Message headers that apply to this body part.
     public var headers: [HTTPMultipartRequestHeader] = []
     
-    let type: Subtype
-    let boundary = HTTPContentBoundary()
-    var entities: [HTTPMultipartRequestContentEntity]
+    private let type: Subtype
+    private let boundary = HTTPContentBoundary()
+    private var entities: [HTTPMultipartRequestContentEntity]
     
     /// Creates and initializes a Multipart body with the given subtype.
     /// - Parameter type: The multipart subtype
     /// - Parameter parts: Array of body subparts to encapsulate
     public init(type: Subtype, parts: [HTTPMultipartRequestContentEntity] = []) {
         self.type = type
-        entities = parts
+        self.entities = parts
         
-        self.setValue("\(type.rawValue); boundary=\(self.boundary.stringValue)", forHeaderField: "Content-Type")
+        setValue("\(type.rawValue); boundary=\(self.boundary.stringValue)", forHeaderField: "Content-Type")
     }
     
     /// Adds a subpart to the end of the body.
     /// - Parameter newElement: Part or nested Multipart to append to the body
     public mutating func append(_ newElement: HTTPMultipartRequestContentEntity) {
         entities.append(newElement)
-    }
-}
-
-extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
-    /// Complete message body, including boundaries and any nested multipart containers.
-    public var body: Data {
-        var data = Data()
-        
-        if let preamble = self.preamble?.data(using: .utf8) {
-            data.append(preamble + HTTPMultipartContent.CRLFData)
-            data.append(HTTPMultipartContent.CRLFData)
-        }
-        
-        if entities.count > 0 {
-            for entity in entities {
-                data.append(self.boundary.delimiterData + HTTPMultipartContent.CRLFData)
-                if let headerData = entity.headers.data() {
-                    data.append(headerData)
-                }
-                data.append(HTTPMultipartContent.CRLFData)
-                data.append(entity.body + HTTPMultipartContent.CRLFData)
-            }
-        } else {
-            data.append(self.boundary.delimiterData)
-            data.append(HTTPMultipartContent.CRLFData)
-            data.append(HTTPMultipartContent.CRLFData)
-        }
-        
-        data.append(self.boundary.distinguishedDelimiterData)
-        return data
     }
 }
 
@@ -159,18 +135,6 @@ extension HTTPMultipartContent {
     }
 }
 
-extension HTTPMultipartContent: HTTPRequestBody {
-    public var requiredHeaderComponents: [HTTPHeaderComponent] {
-        return headers.map {
-            .custom(key: $0.name, value: $0.valueWithAttributes)
-        }
-    }
-    
-    public func buildEntity() throws -> HTTPRequestBodyEntity {
-        return .data(body)
-    }
-}
-
 extension HTTPMultipartContent: CustomStringConvertible {
     public var description: String {
         var descriptionString = self.headers.string() + HTTPMultipartContent.CRLF
@@ -193,10 +157,55 @@ extension HTTPMultipartContent: CustomStringConvertible {
     }
 }
 
+extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
+    /// Complete message body, including boundaries and any nested multipart containers.
+    public var body: Data {
+        var data = Data()
+        
+        if let preamble = self.preamble?.data(using: .utf8) {
+            data.append(preamble + HTTPMultipartContent.CRLFData)
+            data.append(HTTPMultipartContent.CRLFData)
+        }
+        
+        if entities.count > 0 {
+            for entity in entities {
+                data.append(self.boundary.delimiterData + HTTPMultipartContent.CRLFData)
+                
+                if let headerData = entity.headers.data() {
+                    data.append(headerData)
+                }
+                
+                data.append(HTTPMultipartContent.CRLFData)
+                data.append(entity.body + HTTPMultipartContent.CRLFData)
+            }
+        } else {
+            data.append(self.boundary.delimiterData)
+            data.append(HTTPMultipartContent.CRLFData)
+            data.append(HTTPMultipartContent.CRLFData)
+        }
+        
+        data.append(self.boundary.distinguishedDelimiterData)
+        
+        return data
+    }
+}
+
+extension HTTPMultipartContent: HTTPRequestBody {
+    public var requiredHeaderComponents: [HTTPHeaderComponent] {
+        return headers.map {
+            .custom(key: $0.name, value: $0.valueWithAttributes)
+        }
+    }
+    
+    public func buildEntity() throws -> HTTPRequestBodyEntity {
+        return .data(body)
+    }
+}
+
 extension HTTPMultipartContent: Sequence {
     public typealias Iterator = IndexingIterator<[HTTPMultipartRequestContentEntity]>
     
     public func makeIterator() -> Iterator {
-        return entities.makeIterator()
+        entities.makeIterator()
     }
 }
