@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 /// A message part that can be added to Multipart containers.
-public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
+public struct HTTPMultipartPart: HTTPMultipartContentEntity {
     public var body: Data
     public var headers: [HTTPRequest.Multipart.HeaderField] = []
     

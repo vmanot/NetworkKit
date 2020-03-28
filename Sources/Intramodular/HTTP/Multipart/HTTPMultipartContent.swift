@@ -20,15 +20,15 @@ public struct HTTPMultipartContent {
     public var headers: [HTTPRequest.Multipart.HeaderField] = []
     
     private let type: Subtype
-    private let boundary = HTTPContentBoundary()
-    private var entities: [HTTPMultipartRequestContentEntity]
+    private let boundary = HTTPMultipartContent.Boundary()
+    private var entities: [HTTPMultipartContentEntity]
     
     /// Creates and initializes a Multipart body with the given subtype.
     /// - Parameter type: The multipart subtype
     /// - Parameter parts: Array of body subparts to encapsulate
     public init(
         type: Subtype,
-        parts: [HTTPMultipartRequestContentEntity] = []
+        parts: [HTTPMultipartContentEntity] = []
     ) {
         self.type = type
         self.entities = parts
@@ -38,7 +38,7 @@ public struct HTTPMultipartContent {
     
     /// Adds a subpart to the end of the body.
     /// - Parameter newElement: Part or nested Multipart to append to the body
-    public mutating func append(_ newElement: HTTPMultipartRequestContentEntity) {
+    public mutating func append(_ newElement: HTTPMultipartContentEntity) {
         entities.append(newElement)
     }
 }
@@ -77,7 +77,7 @@ extension HTTPMultipartContent: CustomStringConvertible {
     }
 }
 
-extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
+extension HTTPMultipartContent: HTTPMultipartContentEntity {
     /// Complete message body, including boundaries and any nested multipart containers.
     public var body: Data {
         var data = Data()
@@ -121,7 +121,7 @@ extension HTTPMultipartContent: HTTPRequestBody {
 }
 
 extension HTTPMultipartContent: Sequence {
-    public typealias Iterator = IndexingIterator<[HTTPMultipartRequestContentEntity]>
+    public typealias Iterator = IndexingIterator<[HTTPMultipartContentEntity]>
     
     public func makeIterator() -> Iterator {
         entities.makeIterator()
