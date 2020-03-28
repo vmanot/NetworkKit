@@ -5,28 +5,30 @@
 import Foundation
 import Swift
 
-/// A message part that can be added to Multipart containers.
-public struct HTTPMultipartPart: HTTPRequestMultipartContentEntity {
-    public var body: Data
-    public var headers: [HTTPRequest.Multipart.HeaderField] = []
-    
-    public init(body: Data, contentType: String? = nil) {
-        self.body = body
+extension HTTPRequest.Multipart {
+    /// A message part that can be added to Multipart containers.
+    public struct Part: HTTPRequestMultipartContentEntity {
+        public var body: Data
+        public var headers: [HTTPRequest.Multipart.HeaderField] = []
         
-        if let contentType = contentType {
-            setValue(contentType, for: .contentType)
+        public init(body: Data, contentType: String? = nil) {
+            self.body = body
+            
+            if let contentType = contentType {
+                setValue(contentType, for: .contentType)
+            }
         }
-    }
-    
-    public init(body: String, contentType: String? = nil) {
-        self.init(body: body.data(using: .utf8) ?? Data(), contentType: contentType)
         
-        self.setAttribute(attribute: "charset", value: "utf-8", for: .contentType)
+        public init(body: String, contentType: String? = nil) {
+            self.init(body: body.data(using: .utf8) ?? Data(), contentType: contentType)
+            
+            self.setAttribute(attribute: "charset", value: "utf-8", for: .contentType)
+        }
     }
 }
 
 // Helper functions for quick generation of "multipart/form-data" parts.
-extension HTTPMultipartPart {
+extension HTTPRequest.Multipart.Part {
     /// A "multipart/form-data" part containing a form field and its corresponding value, which can be added to
     /// Multipart containers.
     /// - Parameter name: Field name from the form.
@@ -68,7 +70,7 @@ extension HTTPMultipartPart {
     }
 }
 
-extension HTTPMultipartPart: CustomStringConvertible {
+extension HTTPRequest.Multipart.Part: CustomStringConvertible {
     public var description: String {
         var result = headers.string() + HTTPRequest.Multipart.Content.CRLF
         
