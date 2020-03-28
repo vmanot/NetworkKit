@@ -17,7 +17,7 @@ public struct HTTPMultipartContent {
     public var preamble: String? = nil
     
     /// Message headers that apply to this body part.
-    public var headers: [HTTPMultipartRequestHeader] = []
+    public var headers: [HTTPRequest.Multipart.HeaderField] = []
     
     private let type: Subtype
     private let boundary = HTTPContentBoundary()
@@ -207,13 +207,11 @@ extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
 
 extension HTTPMultipartContent: HTTPRequestBody {
     public var requiredHeaderComponents: [HTTPHeaderField] {
-        return headers.map {
-            .custom(key: $0.name, value: $0.valueWithAttributes)
-        }
+        headers.map({ .custom(key: $0.name.rawValue, value: $0.valueWithAttributes) })
     }
     
     public func buildEntity() throws -> HTTPRequestBodyEntity {
-        return .data(body)
+        .data(body)
     }
 }
 

@@ -8,7 +8,7 @@ import Swift
 /// A message part that can be added to Multipart containers.
 public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
     public var body: Data
-    public var headers: [HTTPMultipartRequestHeader] = []
+    public var headers: [HTTPRequest.Multipart.HeaderField] = []
     
     public init(body: Data, contentType: String? = nil) {
         self.body = body
@@ -20,7 +20,8 @@ public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
     
     public init(body: String, contentType: String? = nil) {
         self.init(body: body.data(using: .utf8) ?? Data(), contentType: contentType)
-        self.setAttribute(attribute: "charset", value: "utf-8", forHeaderField: "Content-Type")
+        
+        self.setAttribute(attribute: "charset", value: "utf-8", for: .contentType)
     }
 }
 
@@ -34,7 +35,7 @@ extension HTTPMultipartPart {
         var part = Self(body: value)
         
         part.setValue("form-data", for: .contentDisposition)
-        part.setAttribute(attribute: "name", value: name, forHeaderField: "Content-Disposition")
+        part.setAttribute(attribute: "name", value: name, for: .contentDisposition)
         
         return part
     }
@@ -53,10 +54,10 @@ extension HTTPMultipartPart {
         var part = Self(body: fileData)
         
         part.setValue("form-data", for: .contentDisposition)
-        part.setAttribute(attribute: "name", value: name, forHeaderField: "Content-Disposition")
+        part.setAttribute(attribute: "name", value: name, for: .contentDisposition)
         
         if let fileName = fileName {
-            part.setAttribute(attribute: "filename", value: fileName, forHeaderField: "Content-Disposition")
+            part.setAttribute(attribute: "filename", value: fileName, for: .contentDisposition)
         }
         
         if let contentType = contentType {

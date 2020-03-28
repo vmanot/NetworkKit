@@ -19,7 +19,7 @@ public enum HTTPHeaderField: Hashable {
 }
 
 extension HTTPHeaderField {
-    public enum Key {
+    public enum Key: Hashable {
         case accept
         case authorization
         case cacheControl
