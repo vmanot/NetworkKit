@@ -1,8 +1,12 @@
+//
+// Copyright (c) Vatsal Manot
+//
+
 import Foundation
+import Swift
 
 /// A message part that can be added to Multipart containers.
 public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
-    
     /// Complete message body
     public var body: Data
     
@@ -13,7 +17,7 @@ public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
         self.body = body
         
         if let contentType = contentType {
-            self.setValue(contentType, forHeaderField: "Content-Type")
+            setValue(contentType, forHeaderField: "Content-Type")
         }
     }
     
@@ -21,7 +25,7 @@ public struct HTTPMultipartPart: HTTPMultipartRequestContentEntity {
         self.init(body: body.data(using: .utf8) ?? Data(), contentType: contentType)
         self.setAttribute(attribute: "charset", value: "utf-8", forHeaderField: "Content-Type")
     }
-
+    
 }
 
 // Helper functions for quick generation of "multipart/form-data" parts.

@@ -1,9 +1,13 @@
+//
+// Copyright (c) Vatsal Manot
+//
+
 import Foundation
+import Swift
 
 /// A message header for use with multipart entities and subparts.
 public struct HTTPMultipartRequestHeader {
-    
-    /// Header name like "Content-Type".
+    /// Header name such as "Content-Type".
     public let name: String
     
     /// Header value, not including attributes.
@@ -15,12 +19,14 @@ public struct HTTPMultipartRequestHeader {
     /// Complete header value, including attributes.
     public var valueWithAttributes: String {
         get {
-            var strings = [self.value]
-            for attribute in self.attributes {
+            var strings = [value]
+            
+            for attribute in attributes {
                 if let attributeValue = attribute.value.addingPercentEncoding(withAllowedCharacters:.urlQueryAllowed) {
                     strings.append("\(attribute.key)=\"\(attributeValue)\"")
                 }
             }
+            
             return strings.joined(separator: "; ")
         }
     }
@@ -33,43 +39,40 @@ public struct HTTPMultipartRequestHeader {
     
     /// Return complete header including name, value and attributes. Does not include line break.
     public func string() -> String {
-        return "\(self.name): \(self.valueWithAttributes)"
+        return "\(name): \(valueWithAttributes)"
     }
 }
 
-// Array helper functions
 extension Array where Iterator.Element == HTTPMultipartRequestHeader {
     subscript(key: String) -> HTTPMultipartRequestHeader? {
         get {
-            return self.first(where: {$0.name == key})
-        }
-        set {
-            if let index = self.firstIndex(where: {$0.name == key}) {
-                self.remove(at: index)
+            first(where: { $0.name == key })
+        } set {
+            if let index = firstIndex(where: { $0.name == key }) {
+                remove(at: index)
+                
                 if let newValue = newValue {
-                    self.insert(newValue, at: index)
+                    insert(newValue, at: index)
                 }
             } else if let newValue = newValue {
-                self.append(newValue)
+                append(newValue)
             }
         }
     }
     
     public mutating func remove(_ key: String) {
-        if let index = self.firstIndex(where: {$0.name == key}) {
-            self.remove(at: index)
+        if let index = firstIndex(where: { $0.name == key }) {
+            remove(at: index)
         }
     }
     
     /// Return all headers as a single string, each terminated with a line break.
     public func string() -> String {
-        return self.map { header -> String in
-            return header.string() + HTTPMultipartContent.CRLF
-        }.joined()
+        map({ $0.string() + HTTPMultipartContent.CRLF }).joined()
     }
     
     /// Return all headers, each terminated with a line break.
     public func data(using encoding: String.Encoding = .utf8) -> Data? {
-        return self.string().data(using: encoding)
+        string().data(using: encoding)
     }
 }
