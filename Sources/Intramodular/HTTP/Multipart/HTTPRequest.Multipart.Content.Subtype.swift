@@ -4,7 +4,7 @@
 
 import Swift
 
-extension HTTPMultipartContent {
+extension HTTPRequest.Multipart.Content {
     public enum Subtype: String {
         
         /// The "multipart/alternative" type defines each of the body parts as an pe"alternative" version of the same

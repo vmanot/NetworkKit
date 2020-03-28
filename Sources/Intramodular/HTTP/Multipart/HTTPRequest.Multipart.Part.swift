@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 /// A message part that can be added to Multipart containers.
-public struct HTTPMultipartPart: HTTPMultipartContentEntity {
+public struct HTTPMultipartPart: HTTPRequestMultipartContentEntity {
     public var body: Data
     public var headers: [HTTPRequest.Multipart.HeaderField] = []
     
@@ -70,7 +70,7 @@ extension HTTPMultipartPart {
 
 extension HTTPMultipartPart: CustomStringConvertible {
     public var description: String {
-        var result = headers.string() + HTTPMultipartContent.CRLF
+        var result = headers.string() + HTTPRequest.Multipart.Content.CRLF
         
         if let string = String(data: body, encoding: .utf8) {
             result.append(string)

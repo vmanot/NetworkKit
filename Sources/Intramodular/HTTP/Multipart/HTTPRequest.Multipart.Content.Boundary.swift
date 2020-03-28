@@ -5,9 +5,9 @@
 import Foundation
 import Swift
 
-extension HTTPMultipartContent {
+extension HTTPRequest.Multipart.Content {
     struct Boundary {
-        private let stringValue: String
+        public let stringValue: String
         
         public var delimiter: String {
             "--" + stringValue

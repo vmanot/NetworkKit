@@ -5,12 +5,12 @@
 import Foundation
 import Swift
 
-public protocol HTTPMultipartContentEntity: CustomStringConvertible {
+public protocol HTTPRequestMultipartContentEntity: CustomStringConvertible {
     var headers: [HTTPRequest.Multipart.HeaderField] { get set }
     var body: Data { get }
 }
 
-extension HTTPMultipartContentEntity {
+extension HTTPRequestMultipartContentEntity {
     /// Sets an attribute for a header field, like the "name" attribute for the Content-Disposition header.
     /// If the specified header is not defined for this entity, the attribute is ignored.
     /// If a value was previously set for the given attribute, that value is replaced with the given value.
