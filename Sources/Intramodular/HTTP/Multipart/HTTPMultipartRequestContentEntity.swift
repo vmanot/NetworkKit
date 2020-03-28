@@ -6,8 +6,8 @@ import Foundation
 import Swift
 
 public protocol HTTPMultipartRequestContentEntity: CustomStringConvertible {
-    var body: Data { get }
     var headers: [HTTPRequest.Multipart.HeaderField] { get set }
+    var body: Data { get }
 }
 
 extension HTTPMultipartRequestContentEntity {

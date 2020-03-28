@@ -9,7 +9,7 @@ struct HTTPContentBoundary {
     let stringValue: String
     
     var delimiter: String {
-        return "--" + stringValue
+        "--" + stringValue
     }
     
     var distinguishedDelimiter: String {
@@ -17,7 +17,7 @@ struct HTTPContentBoundary {
     }
     
     var delimiterData: Data {
-        return delimiter.data(using: .utf8)!
+        delimiter.data(using: .utf8)!
     }
     
     var distinguishedDelimiterData: Data {
