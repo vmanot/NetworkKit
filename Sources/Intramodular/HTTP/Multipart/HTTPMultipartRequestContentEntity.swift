@@ -28,16 +28,16 @@ extension HTTPMultipartRequestContentEntity {
     /// Sets a value for a header field. If a value was previously set for the given header, that value is replaced with the given value.
     public mutating func setValue(
         _ value: String?,
-        forHeaderField headerName: String
+        for header: HTTPHeaderField.Key
     ) {
         if let value = value {
-            if headers[headerName] != nil {
-                headers[headerName]?.value = value
+            if headers[header.rawValue] != nil {
+                headers[header.rawValue]?.value = value
             } else {
-                headers.append(HTTPMultipartRequestHeader(name: headerName, value: value))
+                headers.append(HTTPMultipartRequestHeader(name: header.rawValue, value: value))
             }
         } else {
-            headers.remove(headerName)
+            headers.remove(header.rawValue)
         }
     }
 }

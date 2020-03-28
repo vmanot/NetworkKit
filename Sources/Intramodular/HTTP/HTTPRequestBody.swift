@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 public protocol HTTPRequestBody {
-    var requiredHeaderComponents: [HTTPHeaderComponent] { get }
+    var requiredHeaderComponents: [HTTPHeaderField] { get }
     
     func buildEntity() throws -> HTTPRequestBodyEntity
 }
@@ -14,7 +14,7 @@ public protocol HTTPRequestBody {
 // MARK: - Implementation -
 
 extension HTTPRequestBody {
-    public var requiredHeaderComponents: [HTTPHeaderComponent] {
+    public var requiredHeaderComponents: [HTTPHeaderField] {
         return []
     }
 }

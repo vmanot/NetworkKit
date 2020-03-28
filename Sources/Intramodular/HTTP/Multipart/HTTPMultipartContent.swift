@@ -26,11 +26,14 @@ public struct HTTPMultipartContent {
     /// Creates and initializes a Multipart body with the given subtype.
     /// - Parameter type: The multipart subtype
     /// - Parameter parts: Array of body subparts to encapsulate
-    public init(type: Subtype, parts: [HTTPMultipartRequestContentEntity] = []) {
+    public init(
+        type: Subtype,
+        parts: [HTTPMultipartRequestContentEntity] = []
+    ) {
         self.type = type
         self.entities = parts
         
-        setValue("\(type.rawValue); boundary=\(self.boundary.stringValue)", forHeaderField: "Content-Type")
+        setValue("\(type.rawValue); boundary=\(self.boundary.stringValue)", for: .contentType)
     }
     
     /// Adds a subpart to the end of the body.
@@ -135,20 +138,32 @@ extension HTTPMultipartContent {
     }
 }
 
+// MARK: - Protocol Implementations -
+
 extension HTTPMultipartContent: CustomStringConvertible {
     public var description: String {
         var descriptionString = self.headers.string() + HTTPMultipartContent.CRLF
         
         if let preamble = self.preamble {
-            descriptionString += preamble + HTTPMultipartContent.CRLF + HTTPMultipartContent.CRLF
+            descriptionString += String()
+                + preamble
+                + HTTPMultipartContent.CRLF
+                + HTTPMultipartContent.CRLF
         }
         
         if entities.count > 0 {
             for entity in entities {
-                descriptionString += self.boundary.delimiter + HTTPMultipartContent.CRLF + entity.description + HTTPMultipartContent.CRLF
+                descriptionString += String()
+                    + boundary.delimiter
+                    + HTTPMultipartContent.CRLF
+                    + entity.description
+                    + HTTPMultipartContent.CRLF
             }
         } else {
-            descriptionString += self.boundary.delimiter + HTTPMultipartContent.CRLF + HTTPMultipartContent.CRLF
+            descriptionString += String()
+                + boundary.delimiter
+                + HTTPMultipartContent.CRLF
+                + HTTPMultipartContent.CRLF
         }
         
         descriptionString += self.boundary.distinguishedDelimiter
@@ -162,14 +177,14 @@ extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
     public var body: Data {
         var data = Data()
         
-        if let preamble = self.preamble?.data(using: .utf8) {
+        if let preamble = preamble?.data(using: .utf8) {
             data.append(preamble + HTTPMultipartContent.CRLFData)
             data.append(HTTPMultipartContent.CRLFData)
         }
         
         if entities.count > 0 {
             for entity in entities {
-                data.append(self.boundary.delimiterData + HTTPMultipartContent.CRLFData)
+                data.append(boundary.delimiterData + HTTPMultipartContent.CRLFData)
                 
                 if let headerData = entity.headers.data() {
                     data.append(headerData)
@@ -179,19 +194,19 @@ extension HTTPMultipartContent: HTTPMultipartRequestContentEntity {
                 data.append(entity.body + HTTPMultipartContent.CRLFData)
             }
         } else {
-            data.append(self.boundary.delimiterData)
+            data.append(boundary.delimiterData)
             data.append(HTTPMultipartContent.CRLFData)
             data.append(HTTPMultipartContent.CRLFData)
         }
         
-        data.append(self.boundary.distinguishedDelimiterData)
+        data.append(boundary.distinguishedDelimiterData)
         
         return data
     }
 }
 
 extension HTTPMultipartContent: HTTPRequestBody {
-    public var requiredHeaderComponents: [HTTPHeaderComponent] {
+    public var requiredHeaderComponents: [HTTPHeaderField] {
         return headers.map {
             .custom(key: $0.name, value: $0.valueWithAttributes)
         }

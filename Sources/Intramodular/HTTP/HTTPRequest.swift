@@ -10,7 +10,7 @@ import Swift
 /// An HTTP request.
 public struct HTTPRequest: Request {
     public typealias Query = [String: String?]
-    public typealias Header = [HTTPHeaderComponent]
+    public typealias Header = [HTTPHeaderField]
     public typealias Body = HTTPRequestBody
     public typealias Response = HTTPResponse
     public typealias Error = HTTPRequestError
@@ -107,11 +107,11 @@ extension URLRequest {
         httpShouldHandleCookies = request.httpShouldHandleCookies
         
         request.header.forEach { component in
-            addValue(component.value, forHTTPHeaderField: component.key)
+            addValue(component.value, forHTTPHeaderField: component.key.rawValue)
         }
         
         request.body?.requiredHeaderComponents.forEach { component in
-            addValue(component.value, forHTTPHeaderField: component.key)
+            addValue(component.value, forHTTPHeaderField: component.key.rawValue)
         }
         
         if let body = try request.body?.buildEntity() {
