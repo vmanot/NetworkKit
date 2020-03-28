@@ -2,12 +2,13 @@
 // Copyright (c) Vatsal Manot
 //
 
+import API
 import Combine
 import Foundation
 import Swift
 
 /// An HTTP request.
-public struct HTTPRequest {
+public struct HTTPRequest: Request {
     public typealias Query = [String: String?]
     public typealias Header = [HTTPHeaderComponent]
     public typealias Body = HTTPRequestBody
@@ -16,12 +17,24 @@ public struct HTTPRequest {
     
     public private(set) var url: URL
     public private(set) var method: HTTPMethod?
-    public private(set) var query: Query?
+    public private(set) var query: Query = [:]
     public private(set) var header: Header = []
     public private(set) var body: HTTPRequestBody?
     public private(set) var httpShouldHandleCookies: Bool = true
     
+    public var wrappedValue: Self {
+        self
+    }
+    
     public init(url: URL) {
+        self.url = url
+    }
+    
+    public init!(url string: String) {
+        guard let url = URL(string: string) else {
+            return nil
+        }
+        
         self.url = url
     }
 }
@@ -68,6 +81,14 @@ extension HTTPRequest {
     }
 }
 
+// MARK: - Protocol Implementations -
+
+extension HTTPRequest: RequestBuilder {
+    public func buildRequest(with _: Void) -> Self {
+        self
+    }
+}
+
 // MARK: - Helpers -
 
 extension URLRequest {
@@ -76,12 +97,10 @@ extension URLRequest {
             fatalError()
         }
         
-        if let query = request.query {
-            components.queryItems = query.map { (key, value) in
-                URLQueryItem(name: key, value: value)
-            }
+        components.queryItems = request.query.map { (key, value) in
+            URLQueryItem(name: key, value: value)
         }
-        
+
         self.init(url: components.url!)
         
         httpMethod = request.method?.rawValue
