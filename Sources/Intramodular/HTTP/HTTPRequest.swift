@@ -9,25 +9,32 @@ import Swift
 
 /// An HTTP request.
 public struct HTTPRequest: Request {
+    public typealias Method = HTTPMethod
     public typealias Query = [String: String?]
     public typealias Header = [HTTPHeaderField]
     public typealias Body = HTTPRequestBody
     public typealias Response = HTTPResponse
     public typealias Error = HTTPRequestError
     
-    public private(set) var url: URL
+    public private(set) var host: URL
+    public private(set) var path: String?
+    public private(set) var `protocol`: HTTPProtocol = .https
     public private(set) var method: HTTPMethod?
     public private(set) var query: Query = [:]
     public private(set) var header: Header = []
-    public private(set) var body: HTTPRequestBody?
+    public private(set) var body: Body?
     public private(set) var httpShouldHandleCookies: Bool = true
     
-    public var wrappedValue: Self {
-        self
+    public var url: URL {
+        guard let path = path else {
+            return host
+        }
+        
+        return host.appendingPathComponent(path)
     }
     
     public init(url: URL) {
-        self.url = url
+        self.host = url
     }
     
     public init!(url string: String) {
@@ -35,12 +42,28 @@ public struct HTTPRequest: Request {
             return nil
         }
         
-        self.url = url
+        self.host = url
     }
 }
 
 extension HTTPRequest {
-    public func method(_ method: HTTPMethod) -> HTTPRequest {
+    public func path(_ path: String) -> Self {
+        var result = self
+        
+        result.path = path
+        
+        return result
+    }
+    
+    public func `protocol`(_ protocol: HTTPProtocol) -> Self {
+        var result = self
+        
+        result.protocol = `protocol`
+        
+        return result
+    }
+    
+    public func method(_ method: HTTPMethod) -> Self {
         var result = self
         
         result.method = method
@@ -48,7 +71,7 @@ extension HTTPRequest {
         return result
     }
     
-    public func query(_ query: Query) -> HTTPRequest {
+    public func query(_ query: Query) -> Self {
         var result = self
         
         result.query = query
@@ -56,7 +79,7 @@ extension HTTPRequest {
         return result
     }
     
-    public func header(_ header: Header) -> HTTPRequest {
+    public func header(_ header: Header) -> Self {
         var result = self
         
         result.header = header
@@ -64,7 +87,7 @@ extension HTTPRequest {
         return result
     }
     
-    public func body(_ body: HTTPRequestBody?) -> HTTPRequest {
+    public func body(_ body: HTTPRequestBody?) -> Self {
         var result = self
         
         result.body = body
@@ -72,7 +95,7 @@ extension HTTPRequest {
         return result
     }
     
-    public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> HTTPRequest {
+    public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {
         var result = self
         
         result.httpShouldHandleCookies = httpShouldHandleCookies
@@ -100,7 +123,7 @@ extension URLRequest {
         components.queryItems = request.query.map { (key, value) in
             URLQueryItem(name: key, value: value)
         }
-
+        
         self.init(url: components.url!)
         
         httpMethod = request.method?.rawValue
