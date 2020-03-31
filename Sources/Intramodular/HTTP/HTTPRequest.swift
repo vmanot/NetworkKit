@@ -120,9 +120,13 @@ extension URLRequest {
             fatalError()
         }
         
-        components.queryItems = request.query.map { (key, value) in
-            URLQueryItem(name: key, value: value)
+        if components.queryItems == nil {
+            components.queryItems = []
         }
+
+        components.queryItems?.append(contentsOf: request.query.map { (key, value) in
+            URLQueryItem(name: key, value: value)
+        })
         
         self.init(url: components.url!)
         
