@@ -44,7 +44,7 @@ extension HTTPRequest.Multipart {
         
         /// Return complete header including name, value and attributes. Does not include line break.
         public func string() -> String {
-            return "\(name): \(valueWithAttributes)"
+            return "\(name.rawValue): \(valueWithAttributes)"
         }
     }
 }

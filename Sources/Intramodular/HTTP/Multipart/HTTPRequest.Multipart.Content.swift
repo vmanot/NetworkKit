@@ -49,10 +49,10 @@ extension HTTPRequest.Multipart {
 
 extension HTTPRequest.Multipart.Content: CustomStringConvertible {
     public var description: String {
-        var descriptionString = self.headers.string() + HTTPRequest.Multipart.Content.CRLF
+        var result = self.headers.string() + HTTPRequest.Multipart.Content.CRLF
         
         if let preamble = self.preamble {
-            descriptionString += String()
+            result += String()
                 + preamble
                 + HTTPRequest.Multipart.Content.CRLF
                 + HTTPRequest.Multipart.Content.CRLF
@@ -60,22 +60,22 @@ extension HTTPRequest.Multipart.Content: CustomStringConvertible {
         
         if entities.count > 0 {
             for entity in entities {
-                descriptionString += String()
+                result += String()
                     + boundary.delimiter
                     + HTTPRequest.Multipart.Content.CRLF
                     + entity.description
                     + HTTPRequest.Multipart.Content.CRLF
             }
         } else {
-            descriptionString += String()
+            result += String()
                 + boundary.delimiter
                 + HTTPRequest.Multipart.Content.CRLF
                 + HTTPRequest.Multipart.Content.CRLF
         }
         
-        descriptionString += self.boundary.distinguishedDelimiter
+        result += self.boundary.distinguishedDelimiter
         
-        return descriptionString
+        return result
     }
 }
 

@@ -8,6 +8,7 @@ public enum HTTPHeaderField: Hashable {
     case accept(HTTPMediaType)
     case authorization(HTTPAuthorizationType, String)
     case cacheControl(HTTPCacheControlType)
+    case contentDisposition(String)
     case contentLength(octets: Int)
     case contentType(HTTPMediaType)
     case host(host: String, port: String)
@@ -72,6 +73,8 @@ extension HTTPHeaderField {
                 return .authorization
             case .cacheControl:
                 return .cacheControl
+            case .contentDisposition:
+                return .contentDisposition
             case .contentLength:
                 return .contentLength
             case .contentType:
@@ -97,6 +100,8 @@ extension HTTPHeaderField {
                 return "\(type.rawValue) \(credentials)"
             case .cacheControl(let policy):
                 return policy.value
+            case .contentDisposition(let value):
+                return value
             case .contentLength(let length):
                 return String(length)
             case .contentType(let contentType):
