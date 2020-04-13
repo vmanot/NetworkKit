@@ -12,6 +12,10 @@ public struct HTTPSession: RequestSession {
     
     private let base: URLSession
     
+    public init() {
+        self.base = URLSession(configuration: .default)
+    }
+    
     public func task(with request: HTTPRequest) -> AnyPublisher<HTTPRequest.Response, HTTPRequest.Error> {
         do {
             return try base.dataTaskPublisher(for: request)

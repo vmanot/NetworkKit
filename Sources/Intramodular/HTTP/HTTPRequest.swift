@@ -48,59 +48,35 @@ public struct HTTPRequest: Request {
 
 extension HTTPRequest {
     public func path(_ path: String) -> Self {
-        var result = self
-        
-        result.path = path
-        
-        return result
+        then({ $0.path = path })
     }
     
     public func `protocol`(_ protocol: HTTPProtocol) -> Self {
-        var result = self
-        
-        result.protocol = `protocol`
-        
-        return result
+        then({ $0.protocol = `protocol` })
     }
     
     public func method(_ method: HTTPMethod) -> Self {
-        var result = self
-        
-        result.method = method
-        
-        return result
+        then({ $0.method = method })
     }
     
     public func query(_ query: Query) -> Self {
-        var result = self
-        
-        result.query = query
-        
-        return result
+        then({ $0.query = query })
     }
     
     public func header(_ header: Header) -> Self {
-        var result = self
-        
-        result.header = header
-        
-        return result
+        then({ $0.header.append(contentsOf: header) })
+    }
+    
+    public func header(_ field: HTTPHeaderField) -> Self {
+        then({ $0.header.append(field) })
     }
     
     public func body(_ body: HTTPRequestBody?) -> Self {
-        var result = self
-        
-        result.body = body
-        
-        return result
+        then({ $0.body = body })
     }
     
     public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {
-        var result = self
-        
-        result.httpShouldHandleCookies = httpShouldHandleCookies
-        
-        return result
+        then({ $0.httpShouldHandleCookies = httpShouldHandleCookies })
     }
 }
 
@@ -112,7 +88,7 @@ extension HTTPRequest: RequestBuilder {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Auxiliary Implementation -
 
 extension URLRequest {
     public init(_ request: HTTPRequest) throws {
@@ -137,11 +113,11 @@ extension URLRequest {
             addValue(component.value, forHTTPHeaderField: component.key.rawValue)
         }
         
-        request.body?.requiredHeaderComponents.forEach { component in
+        request.body?.header.forEach { component in
             addValue(component.value, forHTTPHeaderField: component.key.rawValue)
         }
         
-        if let body = try request.body?.buildEntity() {
+        if let body = try request.body?.content() {
             switch body {
                 case .data(let data):
                     httpBody = data
@@ -155,5 +131,15 @@ extension URLRequest {
 extension URLSession {
     public func dataTaskPublisher(for request: HTTPRequest) throws -> DataTaskPublisher {
         try dataTaskPublisher(for: URLRequest(request))
+    }
+}
+
+// MARK: - Helpers -
+
+extension HTTPRequest {
+    private func then(_ f: ((inout Self) throws -> Void)) rethrows -> Self {
+        var result = self
+        try f(&result)
+        return result
     }
 }

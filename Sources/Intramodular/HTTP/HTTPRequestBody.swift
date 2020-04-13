@@ -6,15 +6,15 @@ import Foundation
 import Swift
 
 public protocol HTTPRequestBody {
-    var requiredHeaderComponents: [HTTPHeaderField] { get }
+    var header: [HTTPHeaderField] { get }
     
-    func buildEntity() throws -> HTTPRequestBodyEntity
+    func content() throws -> HTTPRequestBodyContent
 }
 
 // MARK: - Implementation -
 
 extension HTTPRequestBody {
-    public var requiredHeaderComponents: [HTTPHeaderField] {
+    public var header: [HTTPHeaderField] {
         return []
     }
 }
@@ -22,7 +22,15 @@ extension HTTPRequestBody {
 // MARK: - Concrete Implementations -
 
 extension Data: HTTPRequestBody {
-    public func buildEntity() throws -> HTTPRequestBodyEntity {
+    public func content() throws -> HTTPRequestBodyContent {
         return .data(self)
+    }
+}
+
+// MARK: - Helpers -
+
+extension HTTPRequest {
+    public func jsonBody<T: Encodable>(_ value: T) throws -> Self {
+        body(try JSONEncoder().encode(value))
     }
 }

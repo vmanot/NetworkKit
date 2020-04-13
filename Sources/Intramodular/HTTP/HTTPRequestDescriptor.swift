@@ -5,5 +5,5 @@
 import Swift
 
 public protocol HTTPRequestDescriptor: Encodable {
-    func populate(_: HTTPRequest) -> HTTPRequest
+    func populate(_: HTTPRequest) throws -> HTTPRequest
 }

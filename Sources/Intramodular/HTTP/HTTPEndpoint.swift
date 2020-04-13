@@ -13,7 +13,7 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface, Input: HTTPReq
 
 open class BaseHTTPEndpoint<Input: HTTPRequestDescriptor, Output: Decodable, Root: HTTPInterface>: Endpoint {
     open func buildRequest(for root: Root, from input: Input) throws -> HTTPRequest {
-        input.populate(HTTPRequest(url: root.host))
+        try input.populate(HTTPRequest(url: root.host))
     }
     
     open func decodeOutput(from response: HTTPResponse) throws -> Output {
@@ -22,5 +22,9 @@ open class BaseHTTPEndpoint<Input: HTTPRequestDescriptor, Output: Decodable, Roo
     
     public init() {
         
+    }
+    
+    public convenience init<E: EndpointDescriptor>(_: E.Type) where E.Input == Input, E.Output == Output {
+        self.init()
     }
 }

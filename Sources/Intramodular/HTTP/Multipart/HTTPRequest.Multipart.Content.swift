@@ -113,11 +113,11 @@ extension HTTPRequest.Multipart.Content: HTTPRequestMultipartContentEntity {
 }
 
 extension HTTPRequest.Multipart.Content: HTTPRequestBody {
-    public var requiredHeaderComponents: [HTTPHeaderField] {
+    public var header: [HTTPHeaderField] {
         headers.map({ .custom(key: $0.name.rawValue, value: $0.valueWithAttributes) })
     }
     
-    public func buildEntity() throws -> HTTPRequestBodyEntity {
+    public func content() throws -> HTTPRequestBodyContent {
         .data(body)
     }
 }

@@ -5,11 +5,11 @@
 import Foundation
 import Swift
 
-public enum HTTPRequestBodyEntity: HTTPRequestBody {
+public enum HTTPRequestBodyContent: HTTPRequestBody {
     case data(Data)
     case inputStream(InputStream)
     
-    public func buildEntity() -> HTTPRequestBodyEntity {
+    public func content() -> HTTPRequestBodyContent {
         self
     }
 }
