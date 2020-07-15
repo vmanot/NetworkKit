@@ -13,3 +13,11 @@ public struct HTTPResponse {
         return .init(rawValue: urlResponse.statusCode)
     }
 }
+
+extension HTTPResponse {
+    public func validate() throws {
+        if code == .error {
+            throw HTTPRequestError.badRequest(self)
+        }
+    }
+}

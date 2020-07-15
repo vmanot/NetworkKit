@@ -5,11 +5,12 @@
 import API
 import Foundation
 import Merge
-import Swift
+import Swallow
 
-public struct HTTPSession: RequestSession {
+public struct HTTPSession: Identifiable, Initiable, RequestSession {
     public let cancellables = Cancellables()
-    
+    public let id = UUID()
+
     private let base: URLSession
     
     public init() {
@@ -20,10 +21,10 @@ public struct HTTPSession: RequestSession {
         do {
             return try base.dataTaskPublisher(for: request)
                 .map({ HTTPRequest.Response(data: $0.data, urlResponse: $0.response as! HTTPURLResponse) })
-                .mapError(HTTPRequestError.init)
+                .mapError(HTTPRequestError.system)
                 .eraseToAnyPublisher()
         } catch {
-            return .failure(HTTPRequestError.unknown)
+            return .failure(HTTPRequestError.system(error))
         }
     }
 }
