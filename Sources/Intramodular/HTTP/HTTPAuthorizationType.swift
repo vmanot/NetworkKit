@@ -31,4 +31,23 @@ public enum HTTPAuthorizationType: Hashable {
                 return value
         }
     }
+    
+    public init(rawValue: String) {
+        switch rawValue {
+            case Self.basic.rawValue:
+                self = .basic
+            case Self.bearer.rawValue:
+                self = .bearer
+            case Self.digest.rawValue:
+                self = .digest
+            case Self.hoba.rawValue:
+                self = .hoba
+            case Self.mutual.rawValue:
+                self = .mutual
+            case Self.aws.rawValue:
+                self = .aws
+            default:
+                self = .custom(rawValue)
+        }
+    }
 }

@@ -72,7 +72,13 @@ extension HTTPRequest {
     }
     
     public func body(_ body: HTTPRequestBody?) -> Self {
-        then({ $0.body = body })
+        then {
+            $0.body = body
+            
+            if $0.method == nil {
+                $0.method = .post
+            }
+        }
     }
     
     public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {

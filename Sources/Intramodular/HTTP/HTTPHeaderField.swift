@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Foundation
 import Swift
 
 public enum HTTPHeaderField: Hashable {
@@ -12,11 +13,52 @@ public enum HTTPHeaderField: Hashable {
     case contentLength(octets: Int)
     case contentType(HTTPMediaType)
     case host(host: String, port: String)
+    case location(URL)
     case origin(String)
     case referer(String)
     case userAgent(HTTPUserAgent)
     
     case custom(key: String, value: String)
+    
+    public init(key: String, value: String) {
+        switch key {
+            case HTTPHeaderField.Key.accept.rawValue:
+                self = .accept(.init(rawValue: value))
+            case HTTPHeaderField.Key.authorization.rawValue:
+                self = .authorization(.init(rawValue: key), value)
+            /*case HTTPHeaderField.Key.cacheControl.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.contentDisposition.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.contentLength.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.contentType.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.host.rawValue:
+                fallthrough*/
+            case HTTPHeaderField.Key.location.rawValue:
+                self = .location(URL(string: value)!)
+            /*case HTTPHeaderField.Key.origin.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.referer.rawValue:
+                fallthrough
+            case HTTPHeaderField.Key.userAgent.rawValue:
+                fallthrough*/
+                
+            default:
+                self = .custom(key: key, value: value)
+        }
+    }
+    
+    public init(key: AnyHashable, value: Any) {
+        if let key = key.base as? String, let value = value as? String {
+            self.init(key: key, value: value)
+        } else {
+            assertionFailure()
+            
+            self = .custom(key: String(describing: key), value: String(describing: value))
+        }
+    }
 }
 
 extension HTTPHeaderField {
@@ -28,6 +70,7 @@ extension HTTPHeaderField {
         case contentLength
         case contentType
         case host
+        case location
         case origin
         case referer
         case userAgent
@@ -50,13 +93,15 @@ extension HTTPHeaderField {
                     return "Content-Type"
                 case .host:
                     return "Host"
+                case .location:
+                    return "Location"
                 case .origin:
                     return "Origin"
                 case .referer:
                     return "Referer"
                 case .userAgent:
                     return "UserAgent"
-                
+                    
                 case let .custom(value):
                     return value
             }
@@ -81,6 +126,8 @@ extension HTTPHeaderField {
                 return .contentType
             case .host:
                 return .host
+            case .location:
+                return .location
             case .origin:
                 return .origin
             case .referer:
@@ -108,6 +155,8 @@ extension HTTPHeaderField {
                 return contentType.rawValue
             case .host(let host, let port):
                 return host + port
+            case .location(let value):
+                return value.absoluteString
             case .origin(let origin):
                 return origin
             case .referer(let referer):
@@ -117,5 +166,13 @@ extension HTTPHeaderField {
             case let .custom(_, value):
                 return value
         }
+    }
+}
+
+// MARK: - Helpers -
+
+extension Sequence where Element == HTTPHeaderField {
+    public subscript(_ key: HTTPHeaderField.Key) -> String? {
+        first(where: { $0.key == key })?.value
     }
 }
