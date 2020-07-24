@@ -15,10 +15,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "git@github.com:vmanot/API.git", .branch("master")),
-        .package(url: "git@github.com:vmanot/Merge.git", .branch("master"))
+        .package(url: "git@github.com:vmanot/FoundationX.git", .branch("master")),
+        .package(url: "git@github.com:vmanot/Merge.git", .branch("master")),
+        .package(url: "git@github.com:vmanot/Task.git", .branch("master"))
     ],
     targets: [
-        .target(name: "Network", dependencies: ["API", "Merge"], path: "Sources"),
+        .target(name: "Network", dependencies: ["API", "FoundationX", "Merge", "Task"], path: "Sources"),
     ],
     swiftLanguageVersions: [
         .version("5.1")
