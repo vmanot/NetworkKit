@@ -9,9 +9,22 @@ import Swallow
 
 public struct HTTPSession: Identifiable, Initiable, RequestSession {
     public let cancellables = Cancellables()
-    public let id = UUID()
     
-    private let base: URLSession
+    public private(set) var id = UUID()
+    
+    private var base: URLSession {
+        didSet {
+            id = .init()
+        }
+    }
+    
+    public var configuration: URLSessionConfiguration {
+        get {
+            base.configuration
+        } set {
+            base = .init(configuration: newValue)
+        }
+    }
     
     public init() {
         self.base = URLSession(configuration: .default)
