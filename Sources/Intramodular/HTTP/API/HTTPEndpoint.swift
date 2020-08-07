@@ -11,7 +11,7 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface, Input: HTTPReq
     func path(from _: Input) -> String
 }
 
-open class BaseHTTPEndpoint<Input: HTTPRequestDescriptor, Output: Decodable, Root: HTTPInterface>: Endpoint {
+open class BaseHTTPEndpoint<Input: HTTPRequestDescriptor, Output: Codable, Root: HTTPInterface>: Endpoint {
     open func buildRequest(for root: Root, from input: Input) throws -> HTTPRequest {
         try input.populate(HTTPRequest(url: root.host))
     }

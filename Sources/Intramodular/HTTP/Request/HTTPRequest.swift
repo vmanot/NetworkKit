@@ -60,7 +60,7 @@ extension HTTPRequest {
     }
     
     public func query(_ query: Query) -> Self {
-        then({ $0.query = query })
+        then({ $0.query.merge(query, uniquingKeysWith: { x, y in x }) })
     }
     
     public func header(_ header: Header) -> Self {
@@ -105,7 +105,7 @@ extension URLRequest {
         if components.queryItems == nil {
             components.queryItems = []
         }
-
+        
         components.queryItems?.append(contentsOf: request.query.map { (key, value) in
             URLQueryItem(name: key, value: value)
         })

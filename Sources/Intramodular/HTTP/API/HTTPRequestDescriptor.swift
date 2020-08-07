@@ -4,6 +4,6 @@
 
 import Swift
 
-public protocol HTTPRequestDescriptor: Encodable {
+public protocol HTTPRequestDescriptor: Codable {
     func populate(_: HTTPRequest) throws -> HTTPRequest
 }
