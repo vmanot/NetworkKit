@@ -47,8 +47,19 @@ public struct HTTPRequest: Request {
 }
 
 extension HTTPRequest {
+    public func host(_ host: URL) -> Self {
+        then({ $0.host = host })
+    }
+
     public func path(_ path: String) -> Self {
         then({ $0.path = path })
+    }
+    
+    public func absolutePath(_ path: String) -> Self {
+        then {
+            $0.host = URL(string: path)!
+            $0.path = nil
+        }
     }
     
     public func `protocol`(_ protocol: HTTPProtocol) -> Self {

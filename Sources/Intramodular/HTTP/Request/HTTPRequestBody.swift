@@ -33,4 +33,13 @@ extension HTTPRequest {
     public func jsonBody<T: Encodable>(_ value: T) throws -> Self {
         body(try JSONEncoder().encode(value))
     }
+    
+    public func jsonBody(_ value: [String: Any?]) throws -> Self {
+        body(
+            try JSONSerialization.data(
+                withJSONObject: value.compactMapValues({ $0 }),
+                options: [.fragmentsAllowed, .sortedKeys]
+            )
+        )
+    }
 }

@@ -11,6 +11,47 @@ public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapp
 
 public struct HTTPRequestBuilders {
     @propertyWrapper
+    public struct SetHost<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base, _ host: URL) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ $0.host(host) })
+        }
+    }
+    
+    @propertyWrapper
+    public struct SetPath<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base, _ path: String) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ $0.path(path) })
+        }
+    }
+    
+    @propertyWrapper
+    public struct SetAbsolutePath<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base, _ path: String) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ $0.absolutePath(path) })
+        }
+        
+        public init(wrappedValue: Base, _ path: @escaping (Input) throws -> String) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                try request.absolutePath(path(input))
+            }
+        }
+    }
+    
+    @propertyWrapper
     public struct SetMethod_GET<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
@@ -77,11 +118,44 @@ public struct HTTPRequestBuilders {
             self.init(wrappedValue: wrappedValue, { _ in [headerField ]})
         }
     }
+    
+    @propertyWrapper
+    public struct AddBody<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init<T: Encodable>(wrappedValue: Base, json value: T) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ try $0.jsonBody(value) })
+        }
+        
+        public init(wrappedValue: Base, json value: [String: Any]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ try $0.jsonBody(value) })
+        }
+        
+        public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                try request.jsonBody(value(input))
+            }
+        }
+        
+        public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any?]) {
+            self.init(wrappedValue: wrappedValue, json: { value($0).compactMapValues({ $0 }) })
+        }
+    }
 }
 
-extension HTTPInterface {    
+extension HTTPInterface {
+    public typealias Host<Base: MutableEndpoint> = HTTPRequestBuilders.SetHost<Base> where Base.Root == Self
+    public typealias Path<Base: MutableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
+    public typealias AbsolutePath<Base: MutableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self
     public typealias GET<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
     public typealias POST<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
     public typealias Query<Base: MutableEndpoint> = HTTPRequestBuilders.AddQuery<Base> where Base.Root == Self
     public typealias Header<Base: MutableEndpoint> = HTTPRequestBuilders.AddHeader<Base> where Base.Root == Self
+    public typealias Body<Base: MutableEndpoint> = HTTPRequestBuilders.AddBody<Base> where Base.Root == Self
 }
