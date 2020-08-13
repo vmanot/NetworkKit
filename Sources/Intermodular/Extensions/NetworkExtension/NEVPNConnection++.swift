@@ -24,7 +24,7 @@ extension NEVPNConnection {
             return .failure(StopVPNTunnelError.badStatus(status))
         }
         
-        return publisher(for: \.status).flatMap { status -> AnyPublisher<Void, StopVPNTunnelError> in
+        return publisher(for: \.status, options: [.new]).flatMap { status -> AnyPublisher<Void, StopVPNTunnelError> in
             switch status {
                 case .invalid:
                     return AnyPublisher.failure(StopVPNTunnelError.badStatus(status))
