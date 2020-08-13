@@ -6,6 +6,7 @@ import NetworkExtension
 import Swift
 
 extension NEVPNManager {
+    // Start the process of disconnecting the VPN.
     public func disconnectIfNecessary(
         timeout timeoutInterval: RunLoop.SchedulerTimeType.Stride? = nil
     ) -> AnyFuture<Void, Error> {
@@ -28,6 +29,7 @@ extension NEVPNManager {
         return connection.stop()
     }
     
+    /// Load the VPN configuration from the Network Extension preferences.
     public final func loadFromPreferences() -> Future<Void, Error> {
         Future { attemptToFulfill in
             self.loadFromPreferences(completionHandler: { error in
@@ -40,6 +42,7 @@ extension NEVPNManager {
         }
     }
     
+    /// Remove the VPN configuration from the Network Extension preferences.
     public final func removeFromPreferences() -> Future<Void, Error> {
         Future { attemptToFulfill in
             self.removeFromPreferences(completionHandler: { error in
