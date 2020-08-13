@@ -6,10 +6,10 @@ import NetworkExtension
 import Swift
 
 extension NEVPNStatus {
-    public var isTransient: Bool? {
+    public var isTransient: Bool {
         switch self {
             case .invalid:
-                return nil
+                return false
             case .disconnected:
                 return false
             case .connecting:
@@ -21,7 +21,7 @@ extension NEVPNStatus {
             case .disconnecting:
                 return true
             @unknown default:
-                return nil
+                return false
         }
     }
 }

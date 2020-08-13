@@ -6,8 +6,26 @@ import NetworkExtension
 import Swift
 
 extension NEVPNManager {
-    public func disconnectIfNecessary() -> AnyFuture<Void, Error> {
-        connection.stop()
+    public func disconnectIfNecessary(
+        timeout timeoutInterval: RunLoop.SchedulerTimeType.Stride? = nil
+    ) -> AnyFuture<Void, Error> {
+        enum DisconnectTimeoutError: Error {
+            case unknown
+        }
+        
+        if let timeoutInterval = timeoutInterval {
+            return connection.stop().timeout(
+                timeoutInterval,
+                scheduler: RunLoop.main,
+                options: nil,
+                customError: {
+                    DisconnectTimeoutError.unknown
+                }
+            )
+            ._unsafe_eraseToAnyFuture()
+        }
+        
+        return connection.stop()
     }
     
     public final func loadFromPreferences() -> Future<Void, Error> {
