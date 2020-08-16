@@ -8,7 +8,6 @@ import Swallow
 public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
 }
 
-
 public struct HTTPRequestBuilders {
     @propertyWrapper
     public struct SetHost<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
@@ -135,6 +134,44 @@ public struct HTTPRequestBuilders {
             self.wrappedValue.addRequestTransform({ try $0.jsonBody(value) })
         }
         
+        public init(wrappedValue: Base, json value: [String: KeyPath<Mirror.DynamicMemberLookup, Mirror.DynamicMemberLookup.Key>]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                try request.jsonBody(value.compactMapValues({ Mirror(reflecting: input)[keyPath: $0] }))
+            }
+        }
+        
+        public init<T>(wrappedValue: Base, json value: [String: KeyPath<Input, T>]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                try request.jsonBody(value.compactMapValues({ input[keyPath: $0] }))
+            }
+        }
+
+        public init<T0, T1, T2>(
+            wrappedValue: Base,
+            json key0: String,
+            _ value0: KeyPath<Input, T0>,
+            _ key1: String,
+            _ value1: KeyPath<Input, T1>,
+            _ key2: String,
+            _ value2: KeyPath<Input, T2>
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                var payload: [String: Any] = [:]
+                
+                payload[key0] = input[keyPath: value0]
+                payload[key1] = input[keyPath: value1]
+                payload[key2] = input[keyPath: value2]
+
+                return try request.jsonBody(payload)
+            }
+        }
+
         public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any]) {
             self.wrappedValue = wrappedValue
             
