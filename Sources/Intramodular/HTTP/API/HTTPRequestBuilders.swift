@@ -122,10 +122,25 @@ public struct HTTPRequestBuilders {
     public struct AddBody<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
-        public init<T: Encodable>(wrappedValue: Base, json value: T) {
+        public init<T: Encodable>(
+            wrappedValue: Base,
+            json value: T,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+            dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+            nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+        ) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ try $0.jsonBody(value) })
+            self.wrappedValue.addRequestTransform {
+                try $0.jsonBody(
+                    value,
+                    dateEncodingStrategy: dateEncodingStrategy,
+                    dataEncodingStrategy: dataEncodingStrategy,
+                    keyEncodingStrategy: keyEncodingStrategy,
+                    nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+                )
+            }
         }
         
         public init(wrappedValue: Base, json value: [String: Any]) {
@@ -149,7 +164,28 @@ public struct HTTPRequestBuilders {
                 try request.jsonBody(value.compactMapValues({ input[keyPath: $0] }))
             }
         }
-
+        
+        public init<T: Encodable>(
+            wrappedValue: Base,
+            json value: KeyPath<Input, T>,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+            dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+            nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { input, request in
+                try request.jsonBody(
+                    input[keyPath: value],
+                    dateEncodingStrategy: dateEncodingStrategy,
+                    dataEncodingStrategy: dataEncodingStrategy,
+                    keyEncodingStrategy: keyEncodingStrategy,
+                    nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+                )
+            }
+        }
+        
         public init<T0, T1, T2>(
             wrappedValue: Base,
             json key0: String,
@@ -167,11 +203,11 @@ public struct HTTPRequestBuilders {
                 payload[key0] = input[keyPath: value0]
                 payload[key1] = input[keyPath: value1]
                 payload[key2] = input[keyPath: value2]
-
+                
                 return try request.jsonBody(payload)
             }
         }
-
+        
         public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any]) {
             self.wrappedValue = wrappedValue
             

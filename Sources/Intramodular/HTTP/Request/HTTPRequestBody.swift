@@ -30,8 +30,21 @@ extension Data: HTTPRequestBody {
 // MARK: - Helpers -
 
 extension HTTPRequest {
-    public func jsonBody<T: Encodable>(_ value: T) throws -> Self {
-        body(try JSONEncoder().encode(value))
+    public func jsonBody<T: Encodable>(
+        _ value: T,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        let encoder = JSONEncoder()
+        
+        dateEncodingStrategy.map(into: &encoder.dateEncodingStrategy)
+        dataEncodingStrategy.map(into: &encoder.dataEncodingStrategy)
+        keyEncodingStrategy.map(into: &encoder.keyEncodingStrategy)
+        nonConformingFloatEncodingStrategy.map(into: &encoder.nonConformingFloatEncodingStrategy)
+        
+        return body(try encoder.encode(value))
     }
     
     public func jsonBody(_ value: [String: Any?]) throws -> Self {

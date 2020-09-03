@@ -10,10 +10,10 @@ public struct HTTPResponse {
     public let urlResponse: HTTPURLResponse
     
     public var code: HTTPResponseStatusCode {
-        return .init(rawValue: urlResponse.statusCode)
+        .init(rawValue: urlResponse.statusCode)
     }
     
-    public var headers: [HTTPHeaderField] {
+    public var header: [HTTPHeaderField] {
         urlResponse
             .allHeaderFields
             .map({ HTTPHeaderField(key: $0, value: $1) })
@@ -55,5 +55,19 @@ extension HTTPResponse {
         }
         
         return try decoder.decode(type, from: data)
+    }
+}
+
+// MARK: - Debugging -
+
+extension HTTPResponse: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
+              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+              let prettyPrintedString = String(data: data, encoding: .utf8) else {
+            return String(data: self.data, encoding: .utf8) ?? "<<error>>"
+        }
+        
+        return prettyPrintedString
     }
 }
