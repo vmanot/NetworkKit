@@ -113,14 +113,16 @@ extension URLRequest {
             fatalError()
         }
         
-        if components.queryItems == nil {
-            components.queryItems = []
+        if !request.query.isEmpty {
+            if components.queryItems == nil {
+                components.queryItems = []
+            }
+            
+            components.queryItems?.append(contentsOf: request.query.map { (key, value) in
+                URLQueryItem(name: key, value: value)
+            })
         }
-        
-        components.queryItems?.append(contentsOf: request.query.map { (key, value) in
-            URLQueryItem(name: key, value: value)
-        })
-        
+
         self.init(url: components.url!)
         
         httpMethod = request.method?.rawValue
