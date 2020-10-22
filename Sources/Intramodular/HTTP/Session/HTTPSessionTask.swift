@@ -10,7 +10,7 @@ public protocol HTTPSessionTask {
     func cancel()
 }
 
-// MARK: - Concrete Implementations -
+// MARK: - Conformances -
 
 extension URLSessionTask: HTTPSessionTask {
     

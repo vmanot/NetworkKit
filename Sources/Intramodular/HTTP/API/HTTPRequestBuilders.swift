@@ -37,7 +37,7 @@ public struct HTTPRequestBuilders {
                 request.path(try path(input))
             }
         }
-
+        
         public init(wrappedValue: Base, _ path: @escaping (Root, Input) throws -> String) {
             self.wrappedValue = wrappedValue
             
