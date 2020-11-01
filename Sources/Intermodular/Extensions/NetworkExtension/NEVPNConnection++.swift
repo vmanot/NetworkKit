@@ -7,8 +7,51 @@ import NetworkExtension
 import Swift
 
 extension NEVPNConnection {
-    private enum StopVPNTunnelError: Error {
+    private enum _Error: Error {
         case badStatus(NEVPNStatus)
+        case unknownStatus(NEVPNStatus)
+    }
+    
+    public func start() -> AnyFuture<Void, Error> {
+        guard status != .connected else {
+            return .just(())
+        }
+        
+        let publisher = NotificationCenter.default.publisher(for: .NEVPNStatusDidChange, object: self).flatMap { _ -> AnyPublisher<Void, _Error> in
+            switch self.status {
+                case .invalid:
+                    return .failure(.badStatus(self.status))
+                case .disconnected:
+                    return .empty()
+                case .connecting:
+                    return .empty()
+                case .connected:
+                    return .just(())
+                case .reasserting:
+                    return .empty()
+                case .disconnecting:
+                    return .empty()
+                @unknown default:
+                    return .failure(.unknownStatus(self.status))
+            }
+        }
+        .prefix(1)
+        .eraseError()
+        ._unsafe_eraseToAnyFuture()
+        
+        do {
+            try startVPNTunnel()
+        } catch {
+            return .failure(error)
+        }
+        
+        if status == .connected {
+            return .just(())
+        } else if status == .invalid {
+            return .failure(_Error.badStatus(status))
+        }
+        
+        return publisher
     }
     
     public func stop() -> AnyFuture<Void, Error> {
@@ -21,28 +64,29 @@ extension NEVPNConnection {
         if status == .disconnected {
             return .just(())
         } else if status == .invalid {
-            return .failure(StopVPNTunnelError.badStatus(status))
+            return .failure(_Error.badStatus(status))
         }
         
-        return publisher(for: \.status, options: [.new]).flatMap { status -> AnyPublisher<Void, StopVPNTunnelError> in
-            switch status {
+        return NotificationCenter.default.publisher(for: .NEVPNStatusDidChange, object: self).flatMap { _ -> AnyPublisher<Void, _Error> in
+            switch self.status {
                 case .invalid:
-                    return AnyPublisher.failure(StopVPNTunnelError.badStatus(status))
+                    return .failure(.badStatus(self.status))
                 case .disconnected:
-                    return AnyPublisher.just(())
+                    return .just(())
                 case .connecting:
-                    return AnyPublisher.empty()
+                    return .empty()
                 case .connected:
-                    return AnyPublisher.empty()
+                    return .empty()
                 case .reasserting:
-                    return AnyPublisher.empty()
+                    return .empty()
                 case .disconnecting:
-                    return AnyPublisher.empty()
+                    return .empty()
                 @unknown default:
-                    return AnyPublisher.failure(StopVPNTunnelError.badStatus(status))
+                    return .failure(.unknownStatus(self.status))
             }
         }
         .prefix(1)
+        .eraseError()
         ._unsafe_eraseToAnyFuture()
     }
 }

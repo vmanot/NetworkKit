@@ -32,39 +32,38 @@ extension NEVPNManager {
     /// Load the VPN configuration from the Network Extension preferences.
     public final func loadFromPreferences() -> Future<Void, Error> {
         Future { attemptToFulfill in
-            self.loadFromPreferences(completionHandler: { error in
+            self.loadFromPreferences { error in
                 if let error = error {
                     attemptToFulfill(.failure(error))
                 } else {
                     attemptToFulfill(.success(()))
                 }
-            })
+            }
         }
     }
     
     /// Remove the VPN configuration from the Network Extension preferences.
     public final func removeFromPreferences() -> Future<Void, Error> {
         Future { attemptToFulfill in
-            self.removeFromPreferences(completionHandler: { error in
+            self.removeFromPreferences { error in
                 if let error = error {
                     attemptToFulfill(.failure(error))
                 } else {
                     attemptToFulfill(.success(()))
                 }
-            })
+            }
         }
     }
     
     public final func saveToPreferences() -> Future<Void, Error> {
         Future { attemptToFulfill in
-            self.removeFromPreferences(completionHandler: { error in
+            self.saveToPreferences { error in
                 if let error = error {
                     attemptToFulfill(.failure(error))
                 } else {
                     attemptToFulfill(.success(()))
                 }
-            })
+            }
         }
     }
-    
 }
