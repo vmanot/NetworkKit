@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+#if os(iOS) || os(macOS) || targetEnvironment(macCatalyst)
+
 import Merge
 import NetworkExtension
 import Swift
@@ -90,3 +92,5 @@ extension NEVPNConnection {
         ._unsafe_eraseToAnyFuture()
     }
 }
+
+#endif

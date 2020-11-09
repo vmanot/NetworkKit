@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+#if os(iOS) || os(macOS) || targetEnvironment(macCatalyst)
+
 import NetworkExtension
 import Swift
 
@@ -67,3 +69,5 @@ extension NEVPNManager {
         }
     }
 }
+
+#endif
