@@ -50,7 +50,7 @@ extension HTTPRequest {
     public func host(_ host: URL) -> Self {
         then({ $0.host = host })
     }
-
+    
     public func path(_ path: String) -> Self {
         then({ $0.path = path })
     }
@@ -72,6 +72,21 @@ extension HTTPRequest {
     
     public func query(_ query: Query) -> Self {
         then({ $0.query.merge(query, uniquingKeysWith: { x, y in x }) })
+    }
+    
+    public func query(_ query: String) -> Self {
+        var queryDictionary = [String: String]()
+        
+        for pair in query.components(separatedBy: "&") {
+            let value = pair
+                .components(separatedBy:"=")[1]
+                .replacingOccurrences(of: "+", with: " ")
+                .removingPercentEncoding ?? ""
+            
+            queryDictionary[pair.components(separatedBy: "=")[0]] = value
+        }
+        
+        return self.query(queryDictionary)
     }
     
     public func header(_ header: Header) -> Self {
@@ -122,7 +137,7 @@ extension URLRequest {
                 URLQueryItem(name: key, value: value)
             })
         }
-
+        
         self.init(url: components.url!)
         
         httpMethod = request.method?.rawValue

@@ -79,6 +79,18 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
+    public struct SetMethod_PATCH<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform({ $0.method(.patch) })
+        }
+    }
+    
+
+    @propertyWrapper
     public struct SetMethod_POST<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
@@ -93,14 +105,14 @@ public struct HTTPRequestBuilders {
     public struct AddQuery<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
-        public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String?>) {
+        public init(wrappedValue: Base, _ query: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addRequestTransform { request, input in
-                request.query([name: input[keyPath: getQueryValue]])
+                request.query(input[keyPath: query])
             }
         }
-        
+
         public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
@@ -108,7 +120,15 @@ public struct HTTPRequestBuilders {
                 request.query([name: input[keyPath: getQueryValue]])
             }
         }
-        
+
+        public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String?>) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addRequestTransform { request, input in
+                request.query([name: input[keyPath: getQueryValue]])
+            }
+        }
+                
         public init(wrappedValue: Base, _ query: [String: KeyPath<Input, String>]) {
             self.wrappedValue = wrappedValue
             
@@ -117,7 +137,7 @@ public struct HTTPRequestBuilders {
             }
         }
     }
-    
+        
     @propertyWrapper
     public struct AddHeader<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
@@ -244,6 +264,7 @@ extension HTTPInterface {
     public typealias Path<Base: MutableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
     public typealias AbsolutePath<Base: MutableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self
     public typealias GET<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
+    public typealias PATCH<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PATCH<Base> where Base.Root == Self
     public typealias POST<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
     public typealias Query<Base: MutableEndpoint> = HTTPRequestBuilders.AddQuery<Base> where Base.Root == Self
     public typealias Header<Base: MutableEndpoint> = HTTPRequestBuilders.AddHeader<Base> where Base.Root == Self
