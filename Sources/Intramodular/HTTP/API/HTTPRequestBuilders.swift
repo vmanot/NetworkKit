@@ -6,6 +6,7 @@ import API
 import Swallow
 
 public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    
 }
 
 public struct HTTPRequestBuilders {
