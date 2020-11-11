@@ -17,7 +17,9 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, _ host: URL) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.host(host) })
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.host(request.host)
+            }
         }
     }
     
@@ -28,22 +30,24 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, _ path: String) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.path(path) })
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.path(path)
+            }
         }
         
         public init(wrappedValue: Base, _ path: @escaping (Input) throws -> String) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.path(try path(input))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.path(try path(context.input))
             }
         }
         
         public init(wrappedValue: Base, _ path: @escaping (Root, Input) throws -> String) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, root, input in
-                request.path(try path(root, input))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.path(try path(context.root, context.input))
             }
         }
     }
@@ -55,14 +59,16 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, _ path: String) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.absolutePath(path) })
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.absolutePath(path)
+            }
         }
         
         public init(wrappedValue: Base, _ path: @escaping (Input) throws -> String) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                try request.absolutePath(path(input))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.absolutePath(try path(context.input))
             }
         }
     }
@@ -74,7 +80,9 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.method(.get) })
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.get)
+            }
         }
     }
     
@@ -85,11 +93,13 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.method(.patch) })
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.patch)
+            }
         }
     }
     
-
+    
     @propertyWrapper
     public struct SetMethod_POST<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
@@ -97,7 +107,9 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ $0.method(.post) })
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.post)
+            }
         }
     }
     
@@ -108,50 +120,50 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, _ query: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.query(input[keyPath: query])
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(context.input[keyPath: query])
             }
         }
-
+        
         public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.query([name: input[keyPath: getQueryValue]])
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query([name: context.input[keyPath: getQueryValue]])
             }
         }
-
+        
         public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String?>) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.query([name: input[keyPath: getQueryValue]])
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query([name: context.input[keyPath: getQueryValue]])
             }
         }
-                
+        
         public init(wrappedValue: Base, _ query: [String: KeyPath<Input, String>]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.query(query.mapValues({ input[keyPath: $0] }))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(query.mapValues({ context.input[keyPath: $0] }))
             }
         }
     }
-        
+    
     @propertyWrapper
     public struct AddHeader<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
+        public init(wrappedValue: Base, _ headerField: HTTPHeaderField) {
+            self.init(wrappedValue: wrappedValue, { _ in [headerField ]})
+        }
+        
         public init(wrappedValue: Base, _ makeHeader: @escaping (Input) -> [HTTPHeaderField]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                request.header(makeHeader(input))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.header(makeHeader(context.input))
             }
-        }
-        
-        public init(wrappedValue: Base, _ headerField: HTTPHeaderField) {
-            self.init(wrappedValue: wrappedValue, { _ in [headerField ]})
         }
     }
     
@@ -169,8 +181,8 @@ public struct HTTPRequestBuilders {
         ) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform {
-                try $0.jsonBody(
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(
                     value,
                     dateEncodingStrategy: dateEncodingStrategy,
                     dataEncodingStrategy: dataEncodingStrategy,
@@ -183,22 +195,24 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, json value: [String: Any]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform({ try $0.jsonBody(value) })
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(value)
+            }
         }
         
         public init(wrappedValue: Base, json value: [String: KeyPath<Mirror.DynamicMemberLookup, Mirror.DynamicMemberLookup.Key>]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                try request.jsonBody(value.compactMapValues({ Mirror(reflecting: input)[keyPath: $0] }))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(value.compactMapValues({ Mirror(reflecting: context.input)[keyPath: $0] }))
             }
         }
         
         public init<T>(wrappedValue: Base, json value: [String: KeyPath<Input, T>]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                try request.jsonBody(value.compactMapValues({ input[keyPath: $0] }))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(value.compactMapValues({ context.input[keyPath: $0] }))
             }
         }
         
@@ -212,9 +226,9 @@ public struct HTTPRequestBuilders {
         ) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
+            self.wrappedValue.addBuildRequestTransform { request, context in
                 try request.jsonBody(
-                    input[keyPath: value],
+                    context.input[keyPath: value],
                     dateEncodingStrategy: dateEncodingStrategy,
                     dataEncodingStrategy: dataEncodingStrategy,
                     keyEncodingStrategy: keyEncodingStrategy,
@@ -234,12 +248,12 @@ public struct HTTPRequestBuilders {
         ) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
+            self.wrappedValue.addBuildRequestTransform { request, context in
                 var payload: [String: Any] = [:]
                 
-                payload[key0] = input[keyPath: value0]
-                payload[key1] = input[keyPath: value1]
-                payload[key2] = input[keyPath: value2]
+                payload[key0] = context.input[keyPath: value0]
+                payload[key1] = context.input[keyPath: value1]
+                payload[key2] = context.input[keyPath: value2]
                 
                 return try request.jsonBody(payload)
             }
@@ -248,8 +262,8 @@ public struct HTTPRequestBuilders {
         public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any]) {
             self.wrappedValue = wrappedValue
             
-            self.wrappedValue.addRequestTransform { request, input in
-                try request.jsonBody(value(input))
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(value(context.input))
             }
         }
         
