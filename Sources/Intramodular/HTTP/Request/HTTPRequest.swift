@@ -62,6 +62,13 @@ extension HTTPRequest {
         }
     }
     
+    public func absolutePath(_ url: URL) -> Self {
+        then {
+            $0.host = url
+            $0.path = nil
+        }
+    }
+    
     public func `protocol`(_ protocol: HTTPProtocol) -> Self {
         then({ $0.protocol = `protocol` })
     }

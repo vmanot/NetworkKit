@@ -10,10 +10,6 @@ public protocol HTTPRepository: Repository where Session == HTTPSession {
     associatedtype Session = HTTPSession
 }
 
-open class HTTPRepositoryBase<Interface: HTTPInterface>: RepositoryBase<Interface, HTTPSession>, HTTPRepository {
-    
-}
-
 // MARK: - Implementation -
 
 private var session_objcAssociationKey: Void = ()

@@ -11,31 +11,25 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface, Input: HTTPReq
     func path(from _: Input) -> String
 }
 
-open class BaseHTTPEndpoint<Input: HTTPRequestDescriptor, Output, Root: HTTPInterface>: Endpoint {
-    public typealias Request = Root.Request
-    
-    public typealias BuildRequestContext = EndpointBuildRequestContext<Root, Input, Output>
-    public typealias DecodeOutputContext = EndpointDecodeOutputContext<Root, Input, Output>
+// MARK: - Conformances -
 
-    open func buildRequest(
+open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output>:
+    MutableEndpointBase<Root, Input, Output> {
+    override open func buildRequestBase(
         from input: Input,
         context: BuildRequestContext
     ) throws -> HTTPRequest {
-        try input.populate(HTTPRequest(url: context.root.host))
+        if let input = input as? HTTPRequestDescriptor {
+            return try input.populate(HTTPRequest(url: context.root.baseURL))
+        } else {
+            return HTTPRequest(url: context.root.baseURL)
+        }
     }
     
-    open func decodeOutput(
+    override open func decodeOutputBase(
         from response: HTTPResponse,
         context: DecodeOutputContext
     ) throws -> Output {
-        fatalError()
-    }
-    
-    public init() {
-        
-    }
-    
-    public convenience init<E: EndpointDescriptor>(_: E.Type) where E.Input == Input, E.Output == Output {
-        self.init()
+        try super.decodeOutput(from: response, context: context)
     }
 }

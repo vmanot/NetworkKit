@@ -21,6 +21,17 @@ public struct HTTPRequestBuilders {
                 request.host(request.host)
             }
         }
+        
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> URL
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.host(try value(context))
+            }
+        }
     }
     
     @propertyWrapper
@@ -35,19 +46,14 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ path: @escaping (Input) throws -> String) {
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> String
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
-                request.path(try path(context.input))
-            }
-        }
-        
-        public init(wrappedValue: Base, _ path: @escaping (Root, Input) throws -> String) {
-            self.wrappedValue = wrappedValue
-            
-            self.wrappedValue.addBuildRequestTransform { request, context in
-                request.path(try path(context.root, context.input))
+                request.path(try value(context))
             }
         }
     }
@@ -64,11 +70,25 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ path: @escaping (Input) throws -> String) {
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> String
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
-                request.absolutePath(try path(context.input))
+                request.absolutePath(try value(context))
+            }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> URL
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.absolutePath(try value(context))
             }
         }
     }
