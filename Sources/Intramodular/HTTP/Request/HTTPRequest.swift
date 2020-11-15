@@ -10,7 +10,7 @@ import Swift
 /// An HTTP request.
 public struct HTTPRequest: Request {
     public typealias Method = HTTPMethod
-    public typealias Query = [String: String?]
+    public typealias Query = [URLQueryItem]
     public typealias Header = [HTTPHeaderField]
     public typealias Body = HTTPRequestBody
     public typealias Response = HTTPResponse
@@ -20,7 +20,7 @@ public struct HTTPRequest: Request {
     public private(set) var path: String?
     public private(set) var `protocol`: HTTPProtocol = .https
     public private(set) var method: HTTPMethod?
-    public private(set) var query: Query = [:]
+    public private(set) var query: Query = []
     public private(set) var header: Header = []
     public private(set) var body: Body?
     public private(set) var httpShouldHandleCookies: Bool = true
@@ -77,23 +77,25 @@ extension HTTPRequest {
         then({ $0.method = method })
     }
     
-    public func query(_ query: Query) -> Self {
-        then({ $0.query.merge(query, uniquingKeysWith: { x, y in x }) })
+    public func query(_ items: [URLQueryItem]) -> Self {
+        then({ $0.query.append(contentsOf: items) })
     }
     
-    public func query(_ query: String) -> Self {
-        var queryDictionary = [String: String]()
-        
-        for pair in query.components(separatedBy: "&") {
-            let value = pair
-                .components(separatedBy:"=")[1]
-                .replacingOccurrences(of: "+", with: " ")
-                .removingPercentEncoding ?? ""
-            
-            queryDictionary[pair.components(separatedBy: "=")[0]] = value
-        }
-        
-        return self.query(queryDictionary)
+    public func query(_ query: [String: String?]) -> Self {
+        then({ $0.query.append(contentsOf: query.map({ URLQueryItem(name: $0.key, value: $0.value) })) })
+    }
+    
+    public func query(_ queryString: String) -> Self {
+        query(
+            queryString.components(separatedBy: "&").map { pair -> URLQueryItem in
+                let value = pair
+                    .components(separatedBy:"=")[1]
+                    .replacingOccurrences(of: "+", with: " ")
+                    .removingPercentEncoding ?? ""
+                
+                return URLQueryItem(name: pair.components(separatedBy: "=")[0], value: value)
+            }
+        )
     }
     
     public func header(_ header: Header) -> Self {
@@ -140,9 +142,7 @@ extension URLRequest {
                 components.queryItems = []
             }
             
-            components.queryItems?.append(contentsOf: request.query.map { (key, value) in
-                URLQueryItem(name: key, value: value)
-            })
+            components.queryItems?.append(contentsOf: request.query)
         }
         
         self.init(url: components.url!)
