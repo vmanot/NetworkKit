@@ -137,6 +137,14 @@ public struct HTTPRequestBuilders {
     public struct AddQuery<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
+        public init(wrappedValue: Base, _ query: KeyPath<Input, [URLQueryItem]>) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(context.input[keyPath: query])
+            }
+        }
+
         public init(wrappedValue: Base, _ query: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
@@ -145,6 +153,14 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init(wrappedValue: Base, _ query: [String: KeyPath<Input, String>]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(query.mapValues({ context.input[keyPath: $0] }))
+            }
+        }
+
         public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
@@ -158,14 +174,6 @@ public struct HTTPRequestBuilders {
             
             self.wrappedValue.addBuildRequestTransform { request, context in
                 request.query([name: context.input[keyPath: getQueryValue]])
-            }
-        }
-        
-        public init(wrappedValue: Base, _ query: [String: KeyPath<Input, String>]) {
-            self.wrappedValue = wrappedValue
-            
-            self.wrappedValue.addBuildRequestTransform { request, context in
-                request.query(query.mapValues({ context.input[keyPath: $0] }))
             }
         }
     }
