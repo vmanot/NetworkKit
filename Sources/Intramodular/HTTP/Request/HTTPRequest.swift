@@ -8,7 +8,7 @@ import Foundation
 import Swift
 
 /// An HTTP request.
-public struct HTTPRequest: Request {
+public struct HTTPRequest: Codable, Request {
     public typealias Method = HTTPMethod
     public typealias Query = [URLQueryItem]
     public typealias Header = [HTTPHeaderField]

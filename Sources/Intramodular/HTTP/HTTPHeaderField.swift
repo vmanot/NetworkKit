@@ -169,6 +169,25 @@ extension HTTPHeaderField {
     }
 }
 
+// MARK: - Protocol Conformances -
+
+extension HTTPHeaderField: Codable {
+    private struct _CodableRepresentation: Codable {
+        let key: String
+        let value: String
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let keyValuePair = try decoder.singleValueContainer().decode(_CodableRepresentation.self)
+        
+        self.init(key: keyValuePair.key, value: keyValuePair.value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        try encoder.encode(single: _CodableRepresentation(key: key.rawValue, value: value))
+    }
+}
+
 // MARK: - Helpers -
 
 extension Sequence where Element == HTTPHeaderField {

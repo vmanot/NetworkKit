@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPUserAgent: Hashable, RawRepresentable {
+public enum HTTPUserAgent: Codable, Hashable, RawRepresentable {
     case bot
     case chrome
     case chromeAndroid

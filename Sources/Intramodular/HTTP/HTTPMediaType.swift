@@ -4,10 +4,10 @@
 
 import Swift
 
-public enum HTTPMediaType: Hashable, RawRepresentable {
+public enum HTTPMediaType: Codable, Hashable, RawRepresentable {
     case json
     case xml
-
+    
     case custom(String)
     
     public var rawValue: String {

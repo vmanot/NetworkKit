@@ -6,10 +6,23 @@ import Foundation
 import Swift
 
 extension HTTPRequest {
-    public struct Body: Hashable {
-        public enum Content: Hashable {
+    public struct Body: Codable, Hashable {
+        public enum Content: Codable, Hashable {
             case data(Data)
             case inputStream(InputStream)
+            
+            public init(from decoder: Decoder) throws {
+                self = .data(try decoder.singleValueContainer().decode(Data.self))
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                switch self {
+                    case .data(let data):
+                        try data.encode(to: encoder)
+                    case .inputStream(let stream):
+                        throw EncodingError.invalidValue(stream, EncodingError.Context(codingPath: [], debugDescription: "Cannot encode an InputStream"))
+                }
+            }
         }
         
         public let header: [HTTPHeaderField]

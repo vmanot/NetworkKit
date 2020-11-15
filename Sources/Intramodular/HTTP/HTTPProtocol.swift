@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPProtocol: String {
+public enum HTTPProtocol: String, Codable, Hashable {
     case http = "http"
     case https = "https"
 }
