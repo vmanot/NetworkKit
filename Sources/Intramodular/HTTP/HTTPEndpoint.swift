@@ -30,6 +30,12 @@ open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output>:
         from response: HTTPResponse,
         context: DecodeOutputContext
     ) throws -> Output {
-        try super.decodeOutput(from: response, context: context)
+        if let outputType = Output.self as? HTTPResponseDecodable.Type {
+            return try outputType.init(from: response) as! Output
+        }
+        
+        try response.validate()
+        
+        return try super.decodeOutput(from: response, context: context)
     }
 }
