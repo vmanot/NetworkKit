@@ -112,16 +112,6 @@ extension HTTPRequest.Multipart.Content: HTTPRequestMultipartContentEntity {
     }
 }
 
-extension HTTPRequest.Multipart.Content: HTTPRequestBody {
-    public var header: [HTTPHeaderField] {
-        headers.map({ .custom(key: $0.name.rawValue, value: $0.valueWithAttributes) })
-    }
-    
-    public func content() throws -> HTTPRequestBodyContent {
-        .data(body)
-    }
-}
-
 extension HTTPRequest.Multipart.Content: Sequence {
     public typealias Iterator = IndexingIterator<[HTTPRequestMultipartContentEntity]>
     

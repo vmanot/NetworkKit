@@ -4,6 +4,6 @@
 
 import Swift
 
-public protocol HTTPRequestDescriptor {
+public protocol HTTPRequestPopulator {
     func populate(_: HTTPRequest) throws -> HTTPRequest
 }

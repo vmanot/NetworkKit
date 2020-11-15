@@ -27,23 +27,23 @@ public enum HTTPHeaderField: Hashable {
             case HTTPHeaderField.Key.authorization.rawValue:
                 self = .authorization(.init(rawValue: key), value)
             /*case HTTPHeaderField.Key.cacheControl.rawValue:
-                fallthrough
-            case HTTPHeaderField.Key.contentDisposition.rawValue:
-                fallthrough
-            case HTTPHeaderField.Key.contentLength.rawValue:
-                fallthrough
-            case HTTPHeaderField.Key.contentType.rawValue:
-                fallthrough
-            case HTTPHeaderField.Key.host.rawValue:
-                fallthrough*/
+             fallthrough
+             case HTTPHeaderField.Key.contentDisposition.rawValue:
+             fallthrough
+             case HTTPHeaderField.Key.contentLength.rawValue:
+             fallthrough
+             case HTTPHeaderField.Key.contentType.rawValue:
+             fallthrough
+             case HTTPHeaderField.Key.host.rawValue:
+             fallthrough*/
             case HTTPHeaderField.Key.location.rawValue:
                 self = .location(URL(string: value)!)
-            /*case HTTPHeaderField.Key.origin.rawValue:
-                fallthrough
+            case HTTPHeaderField.Key.origin.rawValue:
+                self = .origin(value)
             case HTTPHeaderField.Key.referer.rawValue:
-                fallthrough
+                self = .referer(value)
             case HTTPHeaderField.Key.userAgent.rawValue:
-                fallthrough*/
+                self = .userAgent(HTTPUserAgent(rawValue: value))
                 
             default:
                 self = .custom(key: key, value: value)

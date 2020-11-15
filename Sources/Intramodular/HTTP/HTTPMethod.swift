@@ -5,7 +5,7 @@
 import Swift
 
 /// An HTTP method.
-public enum HTTPMethod: String {
+public enum HTTPMethod: String, Codable, Hashable {
     case connect = "CONNECT"
     case delete = "DELETE"
     case get = "GET"

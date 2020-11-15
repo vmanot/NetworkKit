@@ -12,9 +12,7 @@ public struct HTTPRequest: Request {
     public typealias Method = HTTPMethod
     public typealias Query = [URLQueryItem]
     public typealias Header = [HTTPHeaderField]
-    public typealias Body = HTTPRequestBody
     public typealias Response = HTTPResponse
-    public typealias Error = HTTPRequestError
     
     public private(set) var host: URL
     public private(set) var path: String?
@@ -106,7 +104,7 @@ extension HTTPRequest {
         then({ $0.header.append(field) })
     }
     
-    public func body(_ body: HTTPRequestBody?) -> Self {
+    public func body(_ body: HTTPRequest.Body) -> Self {
         then {
             $0.body = body
             
@@ -114,6 +112,10 @@ extension HTTPRequest {
                 $0.method = .post
             }
         }
+    }
+    
+    public func body(_ data: Data) -> Self {
+        body(HTTPRequest.Body(header: [], content: .data(data)))
     }
     
     public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {
@@ -158,7 +160,7 @@ extension URLRequest {
             addValue(component.value, forHTTPHeaderField: component.key.rawValue)
         }
         
-        if let body = try request.body?.content() {
+        if let body = request.body?.content {
             switch body {
                 case .data(let data):
                     httpBody = data

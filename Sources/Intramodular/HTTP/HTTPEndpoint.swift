@@ -7,19 +7,19 @@ import Foundation
 import Merge
 import Swift
 
-public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface, Input: HTTPRequestDescriptor {
-    func path(from _: Input) -> String
+public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
+
 }
 
 // MARK: - Conformances -
 
 open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output>:
-    MutableEndpointBase<Root, Input, Output> {
+    MutableEndpointBase<Root, Input, Output>, HTTPEndpoint {
     override open func buildRequestBase(
         from input: Input,
         context: BuildRequestContext
     ) throws -> HTTPRequest {
-        if let input = input as? HTTPRequestDescriptor {
+        if let input = input as? HTTPRequestPopulator {
             return try input.populate(HTTPRequest(url: context.root.baseURL))
         } else {
             return HTTPRequest(url: context.root.baseURL)

@@ -23,7 +23,7 @@ public struct HTTPResponse {
 extension HTTPResponse {
     public func validate() throws {
         if code == .error {
-            throw HTTPRequestError.badRequest(self)
+            throw HTTPRequest.Error.badRequest(self)
         }
     }
 }
