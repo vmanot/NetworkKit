@@ -12,7 +12,7 @@ public enum HTTPCacheControlType: Hashable {
     case maxAge(seconds: Int)
     case maxStale(seconds: Int?)
     case minFresh(seconds: Int)
-
+    
     public var value: String {
         switch self {
             case .noCache:
@@ -30,7 +30,7 @@ public enum HTTPCacheControlType: Hashable {
                     return "max-stale=\(seconds)"
                 } else {
                     return "max-stale"
-            }
+                }
             case .minFresh(let seconds):
                 return "min-fresh=\(seconds)"
         }

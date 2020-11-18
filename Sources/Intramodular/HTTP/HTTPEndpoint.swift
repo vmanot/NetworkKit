@@ -5,7 +5,7 @@
 import API
 import Foundation
 import Merge
-import Swift
+import Swallow
 
 public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
 
@@ -13,8 +13,8 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
 
 // MARK: - Conformances -
 
-open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output>:
-    MutableEndpointBase<Root, Input, Output>, HTTPEndpoint {
+open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:
+    MutableEndpointBase<Root, Input, Output, Options>, HTTPEndpoint {
     override open func buildRequestBase(
         from input: Input,
         context: BuildRequestContext

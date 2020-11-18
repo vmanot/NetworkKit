@@ -104,6 +104,22 @@ public struct HTTPRequestBuilders {
                 request.method(.get)
             }
         }
+        
+        public init(wrappedValue: Base, _ type: Base.Output.Type) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.get)
+            }
+        }
+        
+        public init(wrappedValue: Base, _ type: Base.Output.Type) where Input == Void, Options == Void? {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.get)
+            }
+        }
     }
     
     @propertyWrapper
