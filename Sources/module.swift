@@ -16,6 +16,10 @@
 #endif
 
 @_exported import Network
+
+#if os(iOS) || os(macOS) || os(watchOS) || targetEnvironment(macCatalyst)
 @_exported import NetworkExtension
+#endif
+
 // @_exported import Swallow
 @_exported import Task
