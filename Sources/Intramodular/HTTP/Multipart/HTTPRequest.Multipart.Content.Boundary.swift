@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 extension HTTPRequest.Multipart.Content {
-    struct Boundary {
+    public struct Boundary {
         public let stringValue: String
         
         public var delimiter: String {
