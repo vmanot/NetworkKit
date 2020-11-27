@@ -192,6 +192,30 @@ public struct HTTPRequestBuilders {
                 request.query([name: context.input[keyPath: getQueryValue]])
             }
         }
+        
+        public init(
+            wrappedValue: Base,
+            _ name: String,
+            value: @escaping (BuildRequestTransformContext) throws -> String
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query([name: try value(context)])
+            }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            _ name: String,
+            value: @escaping (BuildRequestTransformContext) throws -> String?
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query([name: try value(context)])
+            }
+        }
     }
     
     @propertyWrapper
