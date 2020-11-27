@@ -160,7 +160,7 @@ public struct HTTPRequestBuilders {
                 request.query(context.input[keyPath: query])
             }
         }
-
+        
         public init(wrappedValue: Base, _ query: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
@@ -176,7 +176,7 @@ public struct HTTPRequestBuilders {
                 request.query(query.mapValues({ context.input[keyPath: $0] }))
             }
         }
-
+        
         public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String>) {
             self.wrappedValue = wrappedValue
             
