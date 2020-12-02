@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import Swift
+import Swallow
 
 public struct HTTPResponse {
     public let data: Data
@@ -58,7 +58,7 @@ extension HTTPResponse {
     }
 }
 
-// MARK: - Debugging -
+// MARK: - Protocol Conformances -
 
 extension HTTPResponse: CustomDebugStringConvertible {
     public var debugDescription: String {
@@ -69,5 +69,19 @@ extension HTTPResponse: CustomDebugStringConvertible {
         }
         
         return prettyPrintedString
+    }
+}
+
+// MARK: - Helpers -
+
+extension HTTPResponse {
+    public init(_ response: CachedURLResponse) throws {
+        self.init(data: response.data, urlResponse: try cast(response.response, to: HTTPURLResponse.self))
+    }
+}
+
+extension CachedURLResponse {
+    public convenience init(_ response: HTTPResponse) {
+        self.init(response: response.urlResponse, data: response.data)
     }
 }

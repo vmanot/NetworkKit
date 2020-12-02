@@ -6,8 +6,8 @@ import API
 import Merge
 import Swift
 
-public protocol HTTPRepository: Repository where Session == HTTPSession {
-    associatedtype Session = HTTPSession
+public protocol HTTPRepository: Repository where Session == HTTPSession, Cache == HTTPCache {
+
 }
 
 // MARK: - Implementation -
