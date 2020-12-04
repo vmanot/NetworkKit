@@ -6,13 +6,28 @@ import API
 import Merge
 import Swift
 
-public protocol HTTPRepository: Repository where Session == HTTPSession, Cache == HTTPCache {
-
+public protocol HTTPRepository: Repository where Session == HTTPSession {
+    associatedtype Cache = HTTPCache
 }
 
 // MARK: - Implementation -
 
 private var session_objcAssociationKey: Void = ()
+private var cache_objcAssociationKey: Void = ()
+
+extension HTTPRepository where Cache == HTTPCache {
+    public var cache: Cache {
+        if let result = objc_getAssociatedObject(self, &cache_objcAssociationKey) as? Cache {
+            return result
+        } else {
+            let result = Cache()
+            
+            objc_setAssociatedObject(self, &cache_objcAssociationKey, result, .OBJC_ASSOCIATION_RETAIN)
+            
+            return result
+        }
+    }
+}
 
 extension HTTPRepository  {
     public var session: HTTPSession {
