@@ -35,7 +35,7 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
             return try base.dataTaskPublisher(for: request)
                 .map({ HTTPRequest.Response(data: $0.data, urlResponse: $0.response as! HTTPURLResponse) })
                 .mapError(HTTPRequest.Error.system)
-                .eraseToTask()
+                .convertToTask()
         } catch {
             return .failure(HTTPRequest.Error.system(error))
         }
