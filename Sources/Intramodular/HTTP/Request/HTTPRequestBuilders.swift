@@ -193,6 +193,14 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init(wrappedValue: Base, _ name: String, fromContext keyPath: KeyPath<BuildRequestTransformContext, String?>) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query([name: context[keyPath: keyPath]])
+            }
+        }
+        
         public init(
             wrappedValue: Base,
             _ name: String,

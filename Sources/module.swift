@@ -3,6 +3,7 @@
 //
 
 @_exported import API
+@_exported import Compute
 @_exported import Foundation
 
 #if os(iOS) || os(macOS) || targetEnvironment(macCatalyst)

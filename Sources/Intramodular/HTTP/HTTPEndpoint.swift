@@ -13,8 +13,13 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
 
 // MARK: - Conformances -
 
+@propertyWrapper
 open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:
     MutableEndpointBase<Root, Input, Output, Options>, HTTPEndpoint {
+    open override var wrappedValue: MutableEndpointBase<Root, Input, Output, Options> {
+        self
+    }
+
     override open func buildRequestBase(
         from input: Input,
         context: BuildRequestContext
