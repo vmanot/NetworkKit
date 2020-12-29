@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Combine
 import Foundation
 import Swallow
 
@@ -9,11 +10,11 @@ public struct HTTPResponse {
     public let data: Data
     public let urlResponse: HTTPURLResponse
     
-    public var code: HTTPResponseStatusCode {
+    public var statusCode: HTTPResponseStatusCode {
         .init(rawValue: urlResponse.statusCode)
     }
     
-    public var header: [HTTPHeaderField] {
+    public var headerFields: [HTTPHeaderField] {
         urlResponse
             .allHeaderFields
             .map({ HTTPHeaderField(key: $0, value: $1) })
@@ -22,20 +23,38 @@ public struct HTTPResponse {
 
 extension HTTPResponse {
     public func validate() throws {
-        if code == .error {
+        guard statusCode != .error else {
             throw HTTPRequest.Error.badRequest(self)
         }
     }
 }
 
 extension HTTPResponse {
-    public func decodeJSON<T: Decodable>(
+    /// Decodes an instance of the indicated type.
+    public func decode<T, Decoder: TopLevelDecoder>(
         _ type: T.Type,
+        using decoder: Decoder
+    ) throws -> T where Decoder.Input == Data {
+        if let type = type as? HTTPResponseDecodable.Type {
+            return try type.init(from: self) as! T
+        } else {
+            return try decoder.attemptToDecode(type, from: data)
+        }
+    }
+    
+    /// Decodes an instance of the indicated type.
+    public func decode<T>(
+        _ type: T.Type,
+        using decoder: JSONDecoder,
         dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil,
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy? = nil,
         nonConformingFloatDecodingStrategy: JSONDecoder.NonConformingFloatDecodingStrategy? = nil,
         keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil
     ) throws -> T {
+        if let type = type as? HTTPResponseDecodable.Type {
+            return try type.init(from: self) as! T
+        }
+        
         let decoder = JSONDecoder()
         
         if let dateDecodingStrategy = dateDecodingStrategy {
@@ -54,7 +73,22 @@ extension HTTPResponse {
             decoder.keyDecodingStrategy = keyDecodingStrategy
         }
         
-        return try decoder.decode(type, from: data)
+        return try decoder.attemptToDecode(type, from: data)
+    }
+}
+
+extension HTTPResponse {
+    /// Attempts to decode an instance of the indicated type.
+    public func attemptToDecode<T>(
+        _ type: T.Type
+    ) throws -> T  {
+        if let type = type as? HTTPResponseDecodable.Type {
+            return try type.init(from: self) as! T
+        } else if headerFields.contains(.contentType(.json)) {
+            return try JSONDecoder().attemptToDecode(type, from: data)
+        } else {
+            throw DecodingError.dataCorrupted(.init(codingPath: []))
+        }
     }
 }
 

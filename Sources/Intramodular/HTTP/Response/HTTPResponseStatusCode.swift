@@ -60,4 +60,8 @@ extension HTTPResponseStatusCode {
                 return lhs.codeType == .clientError || lhs.codeType == .serverError
         }
     }
+    
+    public static func != (lhs: Self, rhs: Comparison) -> Bool {
+        !(lhs == rhs)
+    }
 }

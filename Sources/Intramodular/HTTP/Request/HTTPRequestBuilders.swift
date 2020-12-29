@@ -72,7 +72,7 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
-            _ value: @escaping (BuildRequestTransformContext) throws -> String
+            fromContext value: @escaping (BuildRequestTransformContext) throws -> String
         ) {
             self.wrappedValue = wrappedValue
             
@@ -83,7 +83,7 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
-            _ value: @escaping (BuildRequestTransformContext) throws -> URL
+            fromContext value: @escaping (BuildRequestTransformContext) throws -> URL
         ) {
             self.wrappedValue = wrappedValue
             
