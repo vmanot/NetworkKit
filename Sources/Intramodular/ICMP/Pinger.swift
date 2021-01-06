@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+#if os(iOS) || os(macOS) || os(tvOS) || targetEnvironment(macCatalyst)
+
 import Combine
 import Foundation
 import Darwin
@@ -457,3 +459,5 @@ extension Pinger {
         return true
     }
 }
+
+#endif

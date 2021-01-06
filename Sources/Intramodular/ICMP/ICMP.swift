@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+#if os(iOS) || os(macOS) || os(tvOS) || targetEnvironment(macCatalyst)
+
 import Darwin
 import Swift
 
@@ -79,3 +81,5 @@ extension ICMPHeader {
         return oldChecksum
     }
 }
+
+#endif
