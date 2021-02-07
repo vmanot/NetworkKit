@@ -6,14 +6,13 @@ import Foundation
 import Swift
 
 public class ASN1DERDecoder {
-    
     public static func decode(data: Data) throws -> [ASN1Object] {
         var iterator = data.makeIterator()
+        
         return try parse(iterator: &iterator)
     }
     
     private static func parse(iterator: inout Data.Iterator) throws -> [ASN1Object] {
-        
         var result: [ASN1Object] = []
         
         while let nextValue = iterator.next() {

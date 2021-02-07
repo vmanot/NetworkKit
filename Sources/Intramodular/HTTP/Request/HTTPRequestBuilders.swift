@@ -153,6 +153,14 @@ public struct HTTPRequestBuilders {
     public struct AddQuery<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
+        public init(wrappedValue: Base, _ query: [URLQueryItem]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(query)
+            }
+        }
+
         public init(wrappedValue: Base, _ query: KeyPath<Input, [URLQueryItem]>) {
             self.wrappedValue = wrappedValue
             
