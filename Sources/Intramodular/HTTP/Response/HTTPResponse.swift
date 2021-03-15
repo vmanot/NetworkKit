@@ -3,12 +3,13 @@
 //
 
 import Combine
-import Foundation
+import FoundationX
 import Swallow
 
-public struct HTTPResponse {
+public struct HTTPResponse: Codable {
     public let data: Data
-    public let urlResponse: HTTPURLResponse
+    @NSKeyedArchived
+    public var urlResponse: HTTPURLResponse
     
     public var statusCode: HTTPResponseStatusCode {
         .init(rawValue: urlResponse.statusCode)
