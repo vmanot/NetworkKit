@@ -93,7 +93,7 @@ extension HTTPResponse {
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension HTTPResponse: CustomDebugStringConvertible {
     public var debugDescription: String {

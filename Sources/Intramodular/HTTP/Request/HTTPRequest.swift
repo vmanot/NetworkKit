@@ -123,7 +123,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension HTTPRequest: RequestBuilder {
     public func buildRequest(with _: Void) -> Self {

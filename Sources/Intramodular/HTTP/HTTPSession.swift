@@ -26,8 +26,12 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
         }
     }
     
+    fileprivate init(base: URLSession) {
+        self.base = base
+    }
+    
     public init() {
-        self.base = URLSession(configuration: .default)
+        self.init(base: .init(configuration: .default))
     }
     
     public func task(with request: HTTPRequest) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
@@ -39,5 +43,19 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
         } catch {
             return .failure(HTTPRequest.Error.system(error))
         }
+    }
+}
+
+// MARK: - Conformances -
+
+extension HTTPSession: ObjectiveCBridgeable {
+    public typealias _ObjectiveCType = URLSession
+    
+    public static func bridgeFromObjectiveC(_ source: ObjectiveCType) throws -> Self {
+        .init(base: source)
+    }
+    
+    public func bridgeToObjectiveC() throws -> ObjectiveCType {
+        base
     }
 }

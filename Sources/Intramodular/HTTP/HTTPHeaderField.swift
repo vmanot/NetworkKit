@@ -169,7 +169,7 @@ extension HTTPHeaderField {
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension HTTPHeaderField: Codable {
     private struct _CodableRepresentation: Codable {
