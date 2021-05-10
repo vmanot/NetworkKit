@@ -36,7 +36,8 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
     
     public func task(with request: HTTPRequest) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
         do {
-            return try base.dataTaskPublisher(for: request)
+            return try base
+                .dataTaskPublisher(for: request)
                 .map({ HTTPRequest.Response(data: $0.data, urlResponse: $0.response as! HTTPURLResponse) })
                 .mapError(HTTPRequest.Error.system)
                 .convertToTask()
