@@ -188,6 +188,12 @@ extension HTTPHeaderField: Codable {
     }
 }
 
+extension HTTPHeaderField: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "\(key.rawValue): \(value)"
+    }
+}
+
 // MARK: - Helpers -
 
 extension Sequence where Element == HTTPHeaderField {

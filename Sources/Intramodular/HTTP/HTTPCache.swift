@@ -20,7 +20,8 @@ public struct HTTPCache: CacheProtocol, Initiable {
     }
     
     public func decacheValue(forKey key: Key) throws -> Value? {
-        try base.cachedResponse(for: try URLRequest(key)).map(HTTPResponse.init)
+        // try base.cachedResponse(for: try URLRequest(key)).map(HTTPResponse.init)
+        return nil // FIXME: The cache doesn't seem to ever expire.
     }
     
     public func removeCachedValue(forKey key: Key) throws {

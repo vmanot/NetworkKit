@@ -12,8 +12,8 @@ public protocol HTTPRepository: Repository where Session == HTTPSession {
 
 // MARK: - Implementation -
 
-private var session_objcAssociationKey: Void = ()
-private var cache_objcAssociationKey: Void = ()
+private var cache_objcAssociationKey: UInt8 = 0
+private var session_objcAssociationKey: UInt8 = 0
 
 extension HTTPRepository where Cache == HTTPCache {
     public var cache: Cache {
