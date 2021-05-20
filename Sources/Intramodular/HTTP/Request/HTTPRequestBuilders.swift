@@ -94,6 +94,35 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
+    public struct SetMethod_DELETE<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.delete)
+            }
+        }
+        
+        public init(wrappedValue: Base, _ type: Base.Output.Type) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.delete)
+            }
+        }
+        
+        public init(wrappedValue: Base, _ type: Base.Output.Type) where Input == Void, Options == Void? {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.delete)
+            }
+        }
+    }
+    
+    @propertyWrapper
     public struct SetMethod_GET<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
@@ -361,6 +390,7 @@ extension HTTPInterface {
     public typealias Host<Base: MutableEndpoint> = HTTPRequestBuilders.SetHost<Base> where Base.Root == Self
     public typealias Path<Base: MutableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
     public typealias AbsolutePath<Base: MutableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self
+    public typealias DELETE<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_DELETE<Base> where Base.Root == Self
     public typealias GET<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
     public typealias PATCH<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PATCH<Base> where Base.Root == Self
     public typealias POST<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
