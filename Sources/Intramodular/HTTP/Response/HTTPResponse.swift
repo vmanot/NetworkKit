@@ -9,14 +9,14 @@ import Swallow
 public struct HTTPResponse: Codable {
     public let data: Data
     @NSKeyedArchived
-    public var urlResponse: HTTPURLResponse
+    var cocoaURLResponse: HTTPURLResponse
     
     public var statusCode: HTTPResponseStatusCode {
-        .init(rawValue: urlResponse.statusCode)
+        .init(rawValue: cocoaURLResponse.statusCode)
     }
     
     public var headerFields: [HTTPHeaderField] {
-        urlResponse
+        cocoaURLResponse
             .allHeaderFields
             .map({ HTTPHeaderField(key: $0, value: $1) })
     }
@@ -111,12 +111,12 @@ extension HTTPResponse: CustomDebugStringConvertible {
 
 extension HTTPResponse {
     public init(_ response: CachedURLResponse) throws {
-        self.init(data: response.data, urlResponse: try cast(response.response, to: HTTPURLResponse.self))
+        self.init(data: response.data, cocoaURLResponse: try cast(response.response, to: HTTPURLResponse.self))
     }
 }
 
 extension CachedURLResponse {
     public convenience init(_ response: HTTPResponse) {
-        self.init(response: response.urlResponse, data: response.data)
+        self.init(response: response.cocoaURLResponse, data: response.data)
     }
 }

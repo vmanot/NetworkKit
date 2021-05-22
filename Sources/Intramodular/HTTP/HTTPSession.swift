@@ -38,7 +38,7 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
         do {
             return try base
                 .dataTaskPublisher(for: request)
-                .map({ HTTPRequest.Response(data: $0.data, urlResponse: $0.response as! HTTPURLResponse) })
+                .map({ HTTPRequest.Response(data: $0.data, cocoaURLResponse: $0.response as! HTTPURLResponse) })
                 .mapError(HTTPRequest.Error.system)
                 .convertToTask()
         } catch {
