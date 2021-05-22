@@ -11,6 +11,10 @@ extension HTTPHeaderField {
         public let uri: String
         public let parameters: [String: String]
         
+        public var url: URL? {
+            URL(string: uri)
+        }
+        
         public init(uri: String, parameters: [String: String]? = nil) {
             self.uri = uri
             self.parameters = parameters ?? [:]
@@ -27,7 +31,7 @@ extension HTTPHeaderField {
         public var type: String? {
             parameters["type"]
         }
-                
+        
         public init(header: String) throws {
             let components = header.components(separatedBy: "; ")
             
