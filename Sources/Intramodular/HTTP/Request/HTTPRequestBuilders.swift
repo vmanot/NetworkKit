@@ -240,6 +240,17 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> [URLQueryItem]
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(try value(context))
+            }
+        }
+
+        public init(
+            wrappedValue: Base,
             _ name: String,
             value: @escaping (BuildRequestTransformContext) throws -> String
         ) {
