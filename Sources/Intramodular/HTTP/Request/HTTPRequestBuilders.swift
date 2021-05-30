@@ -238,6 +238,27 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init<T: Encodable>(
+            wrappedValue: Base,
+            json value: KeyPath<Input, T>,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+            dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+            nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonQuery(
+                    context.input[keyPath: value],
+                    dateEncodingStrategy: dateEncodingStrategy,
+                    dataEncodingStrategy: dataEncodingStrategy,
+                    keyEncodingStrategy: keyEncodingStrategy,
+                    nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+                )
+            }
+        }
+        
         public init(
             wrappedValue: Base,
             _ value: @escaping (BuildRequestTransformContext) throws -> [URLQueryItem]

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import Swift
+import Swallow
 
 extension HTTPRequest {
     public struct Body: Codable, Hashable {
@@ -33,6 +33,34 @@ extension HTTPRequest {
 // MARK: - Helpers -
 
 extension HTTPRequest {
+    public func jsonQuery<T: Encodable>(
+        _ value: T,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        TODO.whole(.fix)
+        
+        let encoder = JSONEncoder()
+        
+        dateEncodingStrategy.map(into: &encoder.dateEncodingStrategy)
+        dataEncodingStrategy.map(into: &encoder.dataEncodingStrategy)
+        keyEncodingStrategy.map(into: &encoder.keyEncodingStrategy)
+        nonConformingFloatEncodingStrategy.map(into: &encoder.nonConformingFloatEncodingStrategy)
+        
+        let queryItems = try JSONDecoder()
+            .decode([String: AnyCodable].self, from: try encoder.encode(value))
+            .map {
+                URLQueryItem(
+                    name: $0.key,
+                    value: try JSONEncoder().encode($0.value).toString()
+                )
+            }
+        
+        return query(queryItems)
+    }
+    
     public func body(_ content: HTTPRequest.Multipart.Content) -> Self {
         body(
             Body(
