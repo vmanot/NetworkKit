@@ -189,7 +189,7 @@ public struct HTTPRequestBuilders {
                 request.query(query)
             }
         }
-
+        
         public init(wrappedValue: Base, _ query: KeyPath<Input, [URLQueryItem]>) {
             self.wrappedValue = wrappedValue
             
@@ -269,7 +269,7 @@ public struct HTTPRequestBuilders {
                 request.query(try value(context))
             }
         }
-
+        
         public init(
             wrappedValue: Base,
             _ name: String,
@@ -414,6 +414,17 @@ public struct HTTPRequestBuilders {
         
         public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any?]) {
             self.init(wrappedValue: wrappedValue, json: { value($0).compactMapValues({ $0 }) })
+        }
+        
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> HTTPRequest.Multipart.Content
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.body(value(context))
+            }
         }
     }
 }
