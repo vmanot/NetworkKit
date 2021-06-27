@@ -46,7 +46,7 @@ extension HTTPSession.Task {
     
     public func start() {
         do {
-            let dataTask = try (session as URLSession).dataTask(with: .init(request))
+            let dataTask = try session.bridgeToObjectiveC().dataTask(with: .init(request))
             
             dataTask.resume()
             

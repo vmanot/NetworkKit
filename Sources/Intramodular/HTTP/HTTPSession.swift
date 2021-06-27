@@ -7,7 +7,7 @@ import Foundation
 import Merge
 import Swallow
 
-public struct HTTPSession: Identifiable, Initiable, RequestSession {
+public final class HTTPSession: Identifiable, Initiable, RequestSession {
     public let cancellables = Cancellables()
     
     public private(set) var id = UUID()
@@ -30,7 +30,7 @@ public struct HTTPSession: Identifiable, Initiable, RequestSession {
         self.base = base
     }
     
-    public init() {
+    public convenience init() {
         self.init(base: .init(configuration: .default))
     }
     

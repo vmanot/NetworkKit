@@ -179,6 +179,19 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
+    public struct SetMethod_PUT<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public var wrappedValue: Base
+        
+        public init(wrappedValue: Base) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, _ in
+                request.method(.put)
+            }
+        }
+    }
+    
+    @propertyWrapper
     public struct AddQuery<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
@@ -300,14 +313,21 @@ public struct HTTPRequestBuilders {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ headerField: HTTPHeaderField) {
-            self.init(wrappedValue: wrappedValue, { _ in [headerField ]})
-        }
-        
-        public init(wrappedValue: Base, _ makeHeader: @escaping (Input) -> [HTTPHeaderField]) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
-                request.header(makeHeader(context.input))
+                request.header(headerField)
+            }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            @ArrayBuilder<HTTPHeaderField> _ makeHeader: @escaping (BuildRequestTransformContext) -> [HTTPHeaderField]
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.header(makeHeader(context))
             }
         }
     }
@@ -382,6 +402,27 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init<T: Encodable>(
+            wrappedValue: Base,
+            json value: @escaping (BuildRequestTransformContext) -> T,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+            dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+            nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(
+                    value(context),
+                    dateEncodingStrategy: dateEncodingStrategy,
+                    dataEncodingStrategy: dataEncodingStrategy,
+                    keyEncodingStrategy: keyEncodingStrategy,
+                    nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+                )
+            }
+        }
+        
         public init<T0, T1, T2>(
             wrappedValue: Base,
             json key0: String,
@@ -437,6 +478,7 @@ extension HTTPInterface {
     public typealias GET<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
     public typealias PATCH<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PATCH<Base> where Base.Root == Self
     public typealias POST<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
+    public typealias PUT<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PUT<Base> where Base.Root == Self
     public typealias Query<Base: MutableEndpoint> = HTTPRequestBuilders.AddQuery<Base> where Base.Root == Self
     public typealias Header<Base: MutableEndpoint> = HTTPRequestBuilders.AddHeader<Base> where Base.Root == Self
     public typealias Body<Base: MutableEndpoint> = HTTPRequestBuilders.AddBody<Base> where Base.Root == Self

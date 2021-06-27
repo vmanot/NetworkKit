@@ -14,7 +14,7 @@ extension NEVPNConnection {
         case unknownStatus(NEVPNStatus)
     }
     
-    public func start() -> AnyFuture<Void, Error> {
+    public func start() -> AnySingleOutputPublisher<Void, Error> {
         guard status != .connected else {
             return .just(())
         }
@@ -39,7 +39,7 @@ extension NEVPNConnection {
         }
         .prefix(1)
         .eraseError()
-        ._unsafe_eraseToAnyFuture()
+        ._unsafe_eraseToAnySingleOutputPublisher()
         
         do {
             try startVPNTunnel()
@@ -56,7 +56,7 @@ extension NEVPNConnection {
         return publisher
     }
     
-    public func stop() -> AnyFuture<Void, Error> {
+    public func stop() -> AnySingleOutputPublisher<Void, Error> {
         guard status != .disconnected else {
             return .just(())
         }
@@ -89,7 +89,7 @@ extension NEVPNConnection {
         }
         .prefix(1)
         .eraseError()
-        ._unsafe_eraseToAnyFuture()
+        ._unsafe_eraseToAnySingleOutputPublisher()
     }
 }
 

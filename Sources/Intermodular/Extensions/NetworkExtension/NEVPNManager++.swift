@@ -11,7 +11,7 @@ extension NEVPNManager {
     // Start the process of disconnecting the VPN.
     public func disconnectIfNecessary(
         timeout timeoutInterval: RunLoop.SchedulerTimeType.Stride? = nil
-    ) -> AnyFuture<Void, Error> {
+    ) -> AnySingleOutputPublisher<Void, Error> {
         enum DisconnectTimeoutError: Error {
             case unknown
         }
@@ -25,7 +25,7 @@ extension NEVPNManager {
                     DisconnectTimeoutError.unknown
                 }
             )
-            ._unsafe_eraseToAnyFuture()
+            ._unsafe_eraseToAnySingleOutputPublisher()
         }
         
         return connection.stop()

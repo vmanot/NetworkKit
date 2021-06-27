@@ -11,6 +11,14 @@ extension HTTPRequest {
             case data(Data)
             case inputStream(InputStream)
             
+            public var dataValue: Data? {
+                if case let .data(data) = self {
+                    return data
+                }
+                
+                return nil
+            }
+            
             public init(from decoder: Decoder) throws {
                 self = .data(try decoder.singleValueContainer().decode(Data.self))
             }
