@@ -27,7 +27,7 @@ extension HTTPRequest.Multipart {
         /// Creates and initializes a Multipart body with the given subtype.
         /// - Parameter type: The multipart subtype
         /// - Parameter parts: Array of body subparts to encapsulate
-        public init(
+        private init(
             type: Subtype,
             parts: [HTTPRequestMultipartContentEntity] = []
         ) {
@@ -49,7 +49,7 @@ extension HTTPRequest.Multipart {
         
         /// Adds a subpart to the end of the body.
         /// - Parameter newElement: Part or nested Multipart to append to the body
-        public mutating func append(_ newElement: HTTPRequestMultipartContentEntity) {
+        mutating func append(_ newElement: HTTPRequestMultipartContentEntity) {
             entities.append(newElement)
         }
     }
@@ -119,13 +119,5 @@ extension HTTPRequest.Multipart.Content: HTTPRequestMultipartContentEntity {
         data.append(boundary.distinguishedDelimiterData)
         
         return data
-    }
-}
-
-extension HTTPRequest.Multipart.Content: Sequence {
-    public typealias Iterator = IndexingIterator<[HTTPRequestMultipartContentEntity]>
-    
-    public func makeIterator() -> Iterator {
-        entities.makeIterator()
     }
 }
