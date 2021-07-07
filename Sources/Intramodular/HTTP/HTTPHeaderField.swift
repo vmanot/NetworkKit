@@ -32,10 +32,11 @@ public enum HTTPHeaderField: Hashable {
              fallthrough
              case HTTPHeaderField.Key.contentLength.rawValue:
              fallthrough
-             case HTTPHeaderField.Key.contentType.rawValue:
-             fallthrough
-             case HTTPHeaderField.Key.host.rawValue:
-             fallthrough*/
+             */
+            case HTTPHeaderField.Key.contentType.rawValue:
+                self = .contentType(.init(rawValue: value))
+            case HTTPHeaderField.Key.host.rawValue:
+                self = .custom(key: HTTPHeaderField.Key.host.rawValue, value: value) // FIXME
             case HTTPHeaderField.Key.location.rawValue:
                 self = .location(URL(string: value)!)
             case HTTPHeaderField.Key.origin.rawValue:
@@ -105,6 +106,14 @@ extension HTTPHeaderField {
                 case let .custom(value):
                     return value
             }
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(rawValue)
+        }
+        
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.rawValue == rhs.rawValue
         }
     }
 }
