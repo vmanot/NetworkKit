@@ -105,7 +105,7 @@ extension HTTPRequest {
     }
 
     public func deleteHeader(_ header: HTTPHeaderField.Key) -> Self {
-        then({ $0.header.filterInPlace({ $0.key != header }) })
+        then({ $0.header = $0.header.filter({ $0.key != header }) })
     }
     
     public func body(_ body: HTTPRequest.Body) -> Self {
