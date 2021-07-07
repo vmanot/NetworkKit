@@ -37,6 +37,16 @@ extension HTTPRequest.Multipart {
             setValue("\(type.rawValue); boundary=\(self.boundary.stringValue)", for: .contentType)
         }
         
+        /// Creates and initializes a Multipart body with the given subtype.
+        /// - Parameter type: The multipart subtype
+        /// - Parameter parts: Array of body subparts to encapsulate
+        public init(
+            type: Subtype,
+            parts: [HTTPRequest.Multipart.Part] = []
+        ) {
+            self.init(type: type, parts: parts.map({ $0 as HTTPRequestMultipartContentEntity }))
+        }
+        
         /// Adds a subpart to the end of the body.
         /// - Parameter newElement: Part or nested Multipart to append to the body
         public mutating func append(_ newElement: HTTPRequestMultipartContentEntity) {
