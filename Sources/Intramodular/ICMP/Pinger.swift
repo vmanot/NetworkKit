@@ -271,7 +271,9 @@ extension Pinger {
         if sequenceIndex >= Int.max {
             $sequenceIndex.mutate({ $0 = 1 })
         } else {
-            $sequenceIndex += 1
+            $sequenceIndex.mutate {
+                $0 += 1
+            }
         }
     }
 }
