@@ -8,6 +8,7 @@ import NetworkExtension
 import Swift
 
 extension NEVPNStatus {
+    /// Indicates whether the status is of a transitionary state (for e.g. connecting, or disconnecting).
     public var isTransient: Bool {
         switch self {
             case .invalid:
