@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 /// A type representing an HTTP response status code.
-public struct HTTPResponseStatusCode {
+public struct HTTPResponseStatusCode: CustomStringConvertible {
     public enum CodeType {
         case information
         case success
@@ -32,6 +32,23 @@ public struct HTTPResponseStatusCode {
                 return .serverError
             default:
                 return .unknown
+        }
+    }
+    
+    public var description: String {
+        switch codeType {
+            case .information:
+                return "\(rawValue) INFO"
+            case .success:
+                return "\(rawValue) SUCCESS"
+            case .redirect:
+                return "\(rawValue) REDIRECT"
+            case .clientError:
+                return "\(rawValue) CLIENT-ERROR"
+            case .serverError:
+                return "\(rawValue) SERVER-ERROR"
+            case .unknown:
+                return "\(rawValue) UNKNOWN"
         }
     }
     
