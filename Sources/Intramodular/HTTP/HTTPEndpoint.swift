@@ -15,8 +15,8 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
 
 @propertyWrapper
 open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:
-    MutableEndpointBase<Root, Input, Output, Options>, HTTPEndpoint {
-    open override var wrappedValue: MutableEndpointBase<Root, Input, Output, Options> {
+    ModifiableEndpointBase<Root, Input, Output, Options>, HTTPEndpoint {
+    open override var wrappedValue: ModifiableEndpointBase<Root, Input, Output, Options> {
         self
     }
 

@@ -8,7 +8,7 @@ import Merge
 import Swallow
 
 extension HTTPSession {
-    public final class Task: NSObject, Merge.Task, URLSessionTaskDelegate {
+    public final class Task: NSObject, Merge.ObservableTask, URLSessionTaskDelegate {
         public typealias Success = Data
         public typealias Error = Swift.Error
         public typealias Status = TaskStatus<Data, Error>

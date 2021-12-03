@@ -11,7 +11,7 @@ public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapp
 
 public struct HTTPRequestBuilders {
     @propertyWrapper
-    public struct SetHost<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetHost<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ host: URL) {
@@ -35,7 +35,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetPath<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetPath<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ path: String) {
@@ -59,7 +59,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetAbsolutePath<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetAbsolutePath<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ path: String) {
@@ -94,7 +94,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetMethod_DELETE<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetMethod_DELETE<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base) {
@@ -123,7 +123,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetMethod_GET<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetMethod_GET<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base) {
@@ -152,7 +152,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetMethod_PATCH<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetMethod_PATCH<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base) {
@@ -166,7 +166,7 @@ public struct HTTPRequestBuilders {
     
     
     @propertyWrapper
-    public struct SetMethod_POST<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetMethod_POST<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base) {
@@ -179,7 +179,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct SetMethod_PUT<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct SetMethod_PUT<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base) {
@@ -192,7 +192,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct AddQuery<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct AddQuery<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ query: [URLQueryItem]) {
@@ -309,7 +309,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct AddHeader<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct AddHeader<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init(wrappedValue: Base, _ headerField: HTTPHeaderField) {
@@ -333,7 +333,7 @@ public struct HTTPRequestBuilders {
     }
     
     @propertyWrapper
-    public struct AddBody<Base: MutableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+    public struct AddBody<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
         public var wrappedValue: Base
         
         public init<T: Encodable>(
@@ -471,15 +471,15 @@ public struct HTTPRequestBuilders {
 }
 
 extension HTTPInterface {
-    public typealias Host<Base: MutableEndpoint> = HTTPRequestBuilders.SetHost<Base> where Base.Root == Self
-    public typealias Path<Base: MutableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
-    public typealias AbsolutePath<Base: MutableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self
-    public typealias DELETE<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_DELETE<Base> where Base.Root == Self
-    public typealias GET<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
-    public typealias PATCH<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PATCH<Base> where Base.Root == Self
-    public typealias POST<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
-    public typealias PUT<Base: MutableEndpoint> = HTTPRequestBuilders.SetMethod_PUT<Base> where Base.Root == Self
-    public typealias Query<Base: MutableEndpoint> = HTTPRequestBuilders.AddQuery<Base> where Base.Root == Self
-    public typealias Header<Base: MutableEndpoint> = HTTPRequestBuilders.AddHeader<Base> where Base.Root == Self
-    public typealias Body<Base: MutableEndpoint> = HTTPRequestBuilders.AddBody<Base> where Base.Root == Self
+    public typealias Host<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetHost<Base> where Base.Root == Self
+    public typealias Path<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
+    public typealias AbsolutePath<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self
+    public typealias DELETE<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetMethod_DELETE<Base> where Base.Root == Self
+    public typealias GET<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetMethod_GET<Base> where Base.Root == Self
+    public typealias PATCH<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetMethod_PATCH<Base> where Base.Root == Self
+    public typealias POST<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetMethod_POST<Base> where Base.Root == Self
+    public typealias PUT<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetMethod_PUT<Base> where Base.Root == Self
+    public typealias Query<Base: ModifiableEndpoint> = HTTPRequestBuilders.AddQuery<Base> where Base.Root == Self
+    public typealias Header<Base: ModifiableEndpoint> = HTTPRequestBuilders.AddHeader<Base> where Base.Root == Self
+    public typealias Body<Base: ModifiableEndpoint> = HTTPRequestBuilders.AddBody<Base> where Base.Root == Self
 }
