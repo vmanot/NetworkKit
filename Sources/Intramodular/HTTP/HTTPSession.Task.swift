@@ -36,10 +36,6 @@ extension HTTPSession.Task {
         _statusSubject.eraseToAnyPublisher()
     }
     
-    public var taskIdentifier: TaskIdentifier {
-        .init()
-    }
-    
     public var progress: Progress {
         base?.progress ?? .init()
     }
