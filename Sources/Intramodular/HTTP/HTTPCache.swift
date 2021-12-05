@@ -5,7 +5,7 @@
 import FoundationX
 import Swallow
 
-public struct HTTPCache: CacheProtocol, Initiable {
+public struct HTTPCache: KeyedCache, Initiable {
     public typealias Key = HTTPRequest
     public typealias Value = HTTPResponse
     

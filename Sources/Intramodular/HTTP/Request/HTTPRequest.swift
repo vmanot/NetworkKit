@@ -127,14 +127,6 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Conformances -
-
-extension HTTPRequest: RequestBuilder {
-    public func buildRequest(with _: Void) -> Self {
-        self
-    }
-}
-
 // MARK: - Auxiliary Implementation -
 
 extension URLRequest {
