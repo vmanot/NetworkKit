@@ -43,13 +43,3 @@ extension HTTPRepository where SessionCache == HTTPCache {
         }
     }
 }
-
-extension HTTPRepository  {
-    public var logger: Logger? {
-        get {
-            objc_getAssociatedObject(self, &_HTTPRepository_session_objcAssociationKey) as? Logger
-        } set {
-            objc_setAssociatedObject(self, &_HTTPRepository_session_objcAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN)
-        }
-    }
-}
