@@ -5,7 +5,7 @@
 import Swift
 
 /// An HTTP method.
-public enum HTTPMethod: String, Codable, Hashable {
+public enum HTTPMethod: String, Codable, CustomStringConvertible, Hashable {
     case connect = "CONNECT"
     case delete = "DELETE"
     case get = "GET"
@@ -15,6 +15,10 @@ public enum HTTPMethod: String, Codable, Hashable {
     case post = "POST"
     case put = "PUT"
     case trace = "TRACE"
+    
+    public var description: String {
+        rawValue
+    }
     
     public var prefersQueryParameters: Bool {
         switch self {
