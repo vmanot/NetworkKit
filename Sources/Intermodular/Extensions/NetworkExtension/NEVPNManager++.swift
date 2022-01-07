@@ -4,6 +4,7 @@
 
 #if os(iOS) || os(macOS) || targetEnvironment(macCatalyst)
 
+import Merge
 import NetworkExtension
 import Swift
 
