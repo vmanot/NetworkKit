@@ -322,7 +322,7 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
-            @ArrayBuilder<HTTPHeaderField> _ makeHeader: @escaping (BuildRequestTransformContext) -> [HTTPHeaderField]
+            @ArrayBuilder _ makeHeader: @escaping (BuildRequestTransformContext) -> [HTTPHeaderField]
         ) {
             self.wrappedValue = wrappedValue
             
