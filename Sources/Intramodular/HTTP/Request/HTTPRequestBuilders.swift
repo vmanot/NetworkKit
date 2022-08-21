@@ -459,6 +459,17 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> HTTPRequest.Body
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.body(value(context))
+            }
+        }
+
+        public init(
+            wrappedValue: Base,
             _ value: @escaping (BuildRequestTransformContext) throws -> HTTPRequest.Multipart.Content
         ) {
             self.wrappedValue = wrappedValue

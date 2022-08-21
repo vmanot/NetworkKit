@@ -35,6 +35,14 @@ extension HTTPRequest {
         
         public let header: [HTTPHeaderField]
         public let content: Content
+        
+        public var data: Data? {
+            content.dataValue
+        }
+        
+        public static func data(_ data: Data) -> Self {
+            .init(header: [], content: .data(data))
+        }
     }
 }
 

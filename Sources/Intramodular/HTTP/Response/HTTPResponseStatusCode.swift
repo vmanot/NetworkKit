@@ -6,7 +6,7 @@ import Foundation
 import Swift
 
 /// A type representing an HTTP response status code.
-public struct HTTPResponseStatusCode: CustomStringConvertible {
+public struct HTTPResponseStatusCode: CustomStringConvertible, Hashable {
     public enum CodeType {
         case information
         case success
@@ -80,5 +80,17 @@ extension HTTPResponseStatusCode {
     
     public static func != (lhs: Self, rhs: Comparison) -> Bool {
         !(lhs == rhs)
+    }
+}
+
+// MARK: - Conformances -
+
+extension HTTPResponseStatusCode: Codable {
+    public init(from decoder: Decoder) throws {
+        try self.init(rawValue: Int(from: decoder))
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        try rawValue.encode(to: encoder)
     }
 }
