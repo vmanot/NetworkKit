@@ -285,6 +285,28 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
+            _ value: @escaping (BuildRequestTransformContext) throws -> [String: String?]
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(try value(context))
+            }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            _ value: [String: KeyPath<BuildRequestTransformContext, String?>]
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(value.mapValues({ context[keyPath: $0] }))
+            }
+        }
+
+        public init(
+            wrappedValue: Base,
             _ name: String,
             value: @escaping (BuildRequestTransformContext) throws -> String
         ) {

@@ -7,7 +7,7 @@ import Combine
 import Foundation
 import Swift
 
-/// An HTTP request.
+/// An encapsulation of a HTTP request.
 public struct HTTPRequest: Codable, Request {
     public typealias Method = HTTPMethod
     public typealias Query = [URLQueryItem]
@@ -43,6 +43,8 @@ public struct HTTPRequest: Codable, Request {
         self.host = url
     }
 }
+
+// MARK: - API -
 
 extension HTTPRequest {
     public func host(_ host: URL) -> Self {
@@ -124,6 +126,18 @@ extension HTTPRequest {
     
     public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {
         then({ $0.httpShouldHandleCookies = httpShouldHandleCookies })
+    }
+}
+
+// MARK: - Supplementary API -
+
+extension HTTPRequest {
+    public func dataTask(
+        session: HTTPSession = .shared
+    ) async throws -> Task<(data: Data, response: URLResponse), Swift.Error> {
+        Task {
+            try await URLSession.shared.dataTaskPublisher(for: self).eraseToAnySingleOutputPublisher().output()
+        }
     }
 }
 

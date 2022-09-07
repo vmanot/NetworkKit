@@ -12,6 +12,8 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession {
     
     public private(set) var id = UUID()
     
+    public static let shared = HTTPSession(base: URLSession.shared)
+    
     private var base: URLSession {
         didSet {
             id = .init()
