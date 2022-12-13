@@ -10,7 +10,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Auxiliary Implementation -
+// MARK: - Auxiliary -
 
 extension HTTPRequest {
     public func body(_ content: HTTPRequest.Multipart.Content) -> Self {

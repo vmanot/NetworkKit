@@ -141,7 +141,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Auxiliary Implementation -
+// MARK: - Auxiliary -
 
 extension URLRequest {
     public init(_ request: HTTPRequest) throws {
