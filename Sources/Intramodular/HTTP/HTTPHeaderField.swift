@@ -9,9 +9,11 @@ public enum HTTPHeaderField: Hashable {
     case accept(HTTPMediaType)
     case authorization(HTTPAuthorizationType, String)
     case cacheControl(HTTPCacheControlType)
+    case connection(HTTPConnectionType)
     case contentDisposition(String)
     case contentLength(octets: Int)
     case contentType(HTTPMediaType)
+    case cookie(String)
     case host(host: String, port: String)
     case location(URL)
     case origin(String)
@@ -22,28 +24,31 @@ public enum HTTPHeaderField: Hashable {
     
     public init(key: String, value: String) {
         switch key {
-            case HTTPHeaderField.Key.accept.rawValue:
+            case Self.Key.accept.rawValue:
                 self = .accept(.init(rawValue: value))
-            case HTTPHeaderField.Key.authorization.rawValue:
+            case Self.Key.authorization.rawValue:
                 self = .authorization(.init(rawValue: key), value)
-            /*case HTTPHeaderField.Key.cacheControl.rawValue:
-             fallthrough
-             case HTTPHeaderField.Key.contentDisposition.rawValue:
-             fallthrough
-             case HTTPHeaderField.Key.contentLength.rawValue:
-             fallthrough
-             */
-            case HTTPHeaderField.Key.contentType.rawValue:
+            case Self.Key.cacheControl.rawValue:
+                TODO.unimplemented
+            case Self.Key.connection.rawValue:
+                self = .connection(HTTPConnectionType(rawValue: value)!)
+            case Self.Key.contentDisposition.rawValue:
+                TODO.unimplemented
+            case Self.Key.contentLength.rawValue:
+                TODO.unimplemented
+            case Self.Key.cookie.rawValue:
+                self = .cookie(value)
+            case Self.Key.contentType.rawValue:
                 self = .contentType(.init(rawValue: value))
-            case HTTPHeaderField.Key.host.rawValue:
+            case Self.Key.host.rawValue:
                 self = .custom(key: HTTPHeaderField.Key.host.rawValue, value: value) // FIXME
-            case HTTPHeaderField.Key.location.rawValue:
+            case Self.Key.location.rawValue:
                 self = .location(URL(string: value)!)
-            case HTTPHeaderField.Key.origin.rawValue:
+            case Self.Key.origin.rawValue:
                 self = .origin(value)
-            case HTTPHeaderField.Key.referer.rawValue:
+            case Self.Key.referer.rawValue:
                 self = .referer(value)
-            case HTTPHeaderField.Key.userAgent.rawValue:
+            case Self.Key.userAgent.rawValue:
                 self = .userAgent(HTTPUserAgent(rawValue: value))
                 
             default:
@@ -67,9 +72,11 @@ extension HTTPHeaderField {
         case accept
         case authorization
         case cacheControl
+        case connection
         case contentDisposition
         case contentLength
         case contentType
+        case cookie
         case host
         case location
         case origin
@@ -86,12 +93,16 @@ extension HTTPHeaderField {
                     return "Authorization"
                 case .cacheControl:
                     return "Cache-Control"
+                case .connection:
+                    return "Connection"
                 case .contentDisposition:
                     return "Content-Disposition"
                 case .contentLength:
                     return "Content-Length"
                 case .contentType:
                     return "Content-Type"
+                case .cookie:
+                    return "Cookie"
                 case .host:
                     return "Host"
                 case .location:
@@ -127,12 +138,16 @@ extension HTTPHeaderField {
                 return .authorization
             case .cacheControl:
                 return .cacheControl
+            case .connection:
+                return .connection
             case .contentDisposition:
                 return .contentDisposition
             case .contentLength:
                 return .contentLength
             case .contentType:
                 return .contentType
+            case .cookie:
+                return .cookie
             case .host:
                 return .host
             case .location:
@@ -156,12 +171,16 @@ extension HTTPHeaderField {
                 return "\(type.rawValue) \(credentials)"
             case .cacheControl(let policy):
                 return policy.value
+            case .connection(let connectionType):
+                return connectionType.rawValue
             case .contentDisposition(let value):
                 return value
             case .contentLength(let length):
                 return String(length)
             case .contentType(let contentType):
                 return contentType.rawValue
+            case .cookie(let value):
+                return value
             case .host(let host, let port):
                 return host + port
             case .location(let value):

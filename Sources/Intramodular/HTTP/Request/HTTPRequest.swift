@@ -103,7 +103,13 @@ extension HTTPRequest {
     }
     
     public func header(_ field: HTTPHeaderField) -> Self {
-        then({ $0.header.append(field) })
+        then {
+            $0.header.append(field)
+            
+            if field.key == .cookie {
+                $0.httpShouldHandleCookies = true
+            }
+        }
     }
     
     public func deleteHeader(_ header: HTTPHeaderField.Key) -> Self {
@@ -126,6 +132,18 @@ extension HTTPRequest {
     
     public func httpShouldHandleCookies(_ httpShouldHandleCookies: Bool) -> Self {
         then({ $0.httpShouldHandleCookies = httpShouldHandleCookies })
+    }
+    
+    public func cookies(
+        _ cookies: [String: String]
+    ) -> Self {
+        header(.cookie(cookies.map({ "\($0.key)=\($0.value)" }).joined(separator: ";")))
+    }
+    
+    public func cookies(
+        _ cookies: [String: String?]
+    ) -> Self {
+        self.cookies(cookies.compactMapValues({ $0 }))
     }
 }
 
