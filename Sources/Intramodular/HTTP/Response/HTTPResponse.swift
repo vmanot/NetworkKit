@@ -46,7 +46,6 @@ extension HTTPResponse {
     /// Decodes an instance of the indicated type.
     public func decode<T>(
         _ type: T.Type,
-        using decoder: JSONDecoder,
         dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil,
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy? = nil,
         nonConformingFloatDecodingStrategy: JSONDecoder.NonConformingFloatDecodingStrategy? = nil,

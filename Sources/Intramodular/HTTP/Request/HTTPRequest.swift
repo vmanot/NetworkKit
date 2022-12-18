@@ -135,15 +135,15 @@ extension HTTPRequest {
     }
     
     public func cookies(
-        _ cookies: [String: String]
+        _ cookies: [String: String]?
     ) -> Self {
-        header(.cookie(cookies.map({ "\($0.key)=\($0.value)" }).joined(separator: ";")))
+        header(.cookie((cookies ?? [:]).map({ "\($0.key)=\($0.value)" }).joined(separator: ";")))
     }
     
     public func cookies(
-        _ cookies: [String: String?]
+        _ cookies: [String: String?]?
     ) -> Self {
-        self.cookies(cookies.compactMapValues({ $0 }))
+        self.cookies(cookies?.compactMapValues({ $0 }))
     }
 }
 
