@@ -8,7 +8,7 @@ import Merge
 import Swallow
 
 public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
-
+    
 }
 
 // MARK: - Conformances -
@@ -19,7 +19,7 @@ open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:
     open override var wrappedValue: ModifiableEndpointBase<Root, Input, Output, Options> {
         self
     }
-
+    
     override open func buildRequestBase(
         from input: Input,
         context: BuildRequestContext
