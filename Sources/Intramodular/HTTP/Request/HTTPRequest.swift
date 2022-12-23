@@ -104,7 +104,9 @@ extension HTTPRequest {
     
     public func header(_ field: HTTPHeaderField) -> Self {
         then {
-            $0.header.append(field)
+            if !$0.header.contains(field) {
+                $0.header.append(field)
+            }
             
             if field.key == .cookie {
                 $0.httpShouldHandleCookies = true

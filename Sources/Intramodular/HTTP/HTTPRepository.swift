@@ -6,7 +6,8 @@ import API
 import Merge
 import Swift
 
-public protocol HTTPClient: Client where Session == HTTPSession {
+public protocol HTTPClient: Client where Session.Request == HTTPRequest {
+    associatedtype Session = HTTPSession
     associatedtype SessionCache = HTTPCache
 }
 
@@ -16,7 +17,7 @@ private var _HTTPClient_session_objcAssociationKey: UInt8 = 0
 private var _HTTPClient_sessionCache_objcAssociationKey: UInt8 = 0
 private var _HTTPClient_logger_objcAssociationKey: UInt8 = 0
 
-extension HTTPClient  {
+extension HTTPClient where Session == HTTPSession {
     public var session: HTTPSession {
         if let result = objc_getAssociatedObject(self, &_HTTPClient_session_objcAssociationKey) as? HTTPSession {
             return result
