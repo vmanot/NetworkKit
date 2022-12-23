@@ -91,7 +91,7 @@ extension HTTPRequest {
         keyEncodingStrategy.map(into: &encoder.keyEncodingStrategy)
         nonConformingFloatEncodingStrategy.map(into: &encoder.nonConformingFloatEncodingStrategy)
         
-        return body(try encoder.encode(value))
+        return body(try encoder.encode(value)).header(.contentType(.json))
     }
     
     public func jsonBody(_ value: [String: Any?]) throws -> Self {
@@ -101,5 +101,29 @@ extension HTTPRequest {
                 options: [.fragmentsAllowed, .sortedKeys]
             )
         )
+    }
+    
+    public func jsonBody<T>(
+        _ value: T,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        if value is Void {
+            return self // FIXME?
+        } else if let value = value as? Encodable {
+            return try jsonBody(
+                value,
+                dateEncodingStrategy: dateEncodingStrategy,
+                dataEncodingStrategy: dataEncodingStrategy,
+                keyEncodingStrategy: keyEncodingStrategy,
+                nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+            )
+        } else {
+            assertionFailure()
+            
+            return self
+        }
     }
 }

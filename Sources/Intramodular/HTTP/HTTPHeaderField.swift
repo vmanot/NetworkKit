@@ -212,7 +212,7 @@ extension HTTPHeaderField: Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        try encoder.encode(single: _CodableRepresentation(key: key.rawValue, value: value))
+        try encoder.encodeSingleValue(_CodableRepresentation(key: key.rawValue, value: value))
     }
 }
 
