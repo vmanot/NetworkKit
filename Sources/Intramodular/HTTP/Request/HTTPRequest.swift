@@ -81,8 +81,12 @@ extension HTTPRequest {
         then({ $0.query.append(contentsOf: items) })
     }
     
-    public func query(_ query: [String: String?]) -> Self {
+    public func query(_ query: [String: String]) -> Self {
         then({ $0.query.append(contentsOf: query.map({ URLQueryItem(name: $0.key, value: $0.value) })) })
+    }
+
+    public func query(_ query: [String: String?]) -> Self {
+        self.query(query.compactMapValues({ $0 }))
     }
     
     public func query(_ queryString: String) -> Self {

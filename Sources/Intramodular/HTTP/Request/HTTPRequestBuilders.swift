@@ -203,6 +203,22 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init(wrappedValue: Base, _ query: [String: String]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(query)
+            }
+        }
+        
+        public init(wrappedValue: Base, _ query: [String: String?]) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.query(query)
+            }
+        }
+        
         public init(wrappedValue: Base, _ query: KeyPath<Input, [URLQueryItem]>) {
             self.wrappedValue = wrappedValue
             
@@ -292,6 +308,13 @@ public struct HTTPRequestBuilders {
             self.wrappedValue.addBuildRequestTransform { request, context in
                 request.query(try value(context))
             }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            _ value: @escaping (Input) throws -> [String: String?]
+        ) {
+            self.init(wrappedValue: wrappedValue, { try value($0.input) })
         }
         
         public init(
