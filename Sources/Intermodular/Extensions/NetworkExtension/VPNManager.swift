@@ -2,8 +2,12 @@
 // Copyright (c) Vatsal Manot
 //
 
+#if canImport(NetworkExtension)
+
 import NetworkExtension
 
+@available(macOS 10.11, *)
+@available(watchOS, unavailable)
 open class VPNManager: ObservableObject {
     private let base: NEVPNManager
     
@@ -30,6 +34,8 @@ open class VPNManager: ObservableObject {
     }
 }
 
+@available(macOS 10.11, *)
+@available(watchOS, unavailable)
 extension VPNManager {
     public var protocolConfiguration: NEVPNProtocol? {
         base.protocolConfiguration
@@ -47,3 +53,5 @@ extension VPNManager {
         base.connection.stopVPNTunnel()
     }
 }
+
+#endif
