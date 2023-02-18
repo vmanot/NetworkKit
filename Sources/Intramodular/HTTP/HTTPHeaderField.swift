@@ -5,7 +5,7 @@
 import Foundation
 import Swift
 
-public enum HTTPHeaderField: Hashable {
+public enum HTTPHeaderField: Hashable, Sendable {
     case accept(HTTPMediaType)
     case authorization(HTTPAuthorizationType, String)
     case cacheControl(HTTPCacheControlType)
@@ -197,7 +197,7 @@ extension HTTPHeaderField {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPHeaderField: Codable {
     private struct _CodableRepresentation: Codable {
@@ -224,7 +224,7 @@ extension HTTPHeaderField: CustomDebugStringConvertible {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension Sequence where Element == HTTPHeaderField {
     public subscript(_ key: HTTPHeaderField.Key) -> String? {

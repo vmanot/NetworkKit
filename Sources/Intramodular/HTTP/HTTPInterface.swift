@@ -16,7 +16,7 @@ public protocol RESTfulHTTPInterface: HTTPInterface, RESTfulInterface {
     
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension HTTPInterface {
     public var baseURL: URL {

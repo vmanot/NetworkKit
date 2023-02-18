@@ -92,7 +92,7 @@ extension HTTPResponse {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPResponse: CustomDebugStringConvertible {
     public var debugDescription: String {
@@ -106,7 +106,7 @@ extension HTTPResponse: CustomDebugStringConvertible {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension HTTPResponse {
     public init(_ response: CachedURLResponse) throws {

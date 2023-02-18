@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPMediaType: Codable, Hashable, RawRepresentable {
+public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
     case json
     case xml
     case eventStream

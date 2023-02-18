@@ -8,7 +8,7 @@ import Foundation
 import Swift
 
 /// An encapsulation of a HTTP request.
-public struct HTTPRequest: Codable, Request {
+public struct HTTPRequest: Codable, Request, Sendable {
     public typealias Method = HTTPMethod
     public typealias Query = [URLQueryItem]
     public typealias Header = [HTTPHeaderField]
@@ -44,7 +44,7 @@ public struct HTTPRequest: Codable, Request {
     }
 }
 
-// MARK: - API -
+// MARK: - API
 
 extension HTTPRequest {
     public func host(_ host: URL) -> Self {
@@ -153,19 +153,22 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Supplementary API -
+// MARK: - Supplementary API
 
 extension HTTPRequest {
     public func dataTask(
         session: HTTPSession = .shared
     ) async throws -> Task<(data: Data, response: URLResponse), Swift.Error> {
         Task {
-            try await URLSession.shared.dataTaskPublisher(for: self).eraseToAnySingleOutputPublisher().output()
+            try await URLSession.shared
+                .dataTaskPublisher(for: self)
+                .eraseToAnySingleOutputPublisher()
+                .output()
         }
     }
 }
 
-// MARK: - Auxiliary -
+// MARK: - Auxiliary
 
 extension URLRequest {
     public init(_ request: HTTPRequest) throws {
@@ -211,7 +214,7 @@ extension URLSession {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension HTTPRequest {
     private func then(_ f: ((inout Self) throws -> Void)) rethrows -> Self {

@@ -83,7 +83,7 @@ extension HTTPResponseStatusCode {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPResponseStatusCode: Codable {
     public init(from decoder: Decoder) throws {

@@ -4,7 +4,7 @@
 
 import Swift
 
-public enum HTTPAuthorizationType: Hashable {
+public enum HTTPAuthorizationType: Hashable, Sendable {
     case basic
     case bearer
     case digest

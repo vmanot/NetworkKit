@@ -6,8 +6,8 @@ import Foundation
 import Swallow
 
 extension HTTPRequest {
-    public struct Body: Codable, Hashable {
-        public enum Content: Codable, Hashable {
+    public struct Body: Codable, Hashable, Sendable {
+        public enum Content: Codable, Hashable, @unchecked Sendable {
             case data(Data)
             case inputStream(InputStream)
             
@@ -46,7 +46,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension HTTPRequest {
     public func jsonQuery<T: Encodable>(

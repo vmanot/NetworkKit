@@ -55,7 +55,7 @@ extension HTTPRequest.Multipart {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPRequest.Multipart.Content: CustomStringConvertible {
     public var description: String {

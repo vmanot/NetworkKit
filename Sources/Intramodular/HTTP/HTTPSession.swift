@@ -49,7 +49,7 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPSession: ObjectiveCBridgeable {
     public typealias _ObjectiveCType = URLSession

@@ -71,7 +71,7 @@ extension HTTPHeaderField.Link {
     }
 }
 
-// MARK: - API -
+// MARK: - API
 
 extension HTTPResponse {
     public var links: [HTTPHeaderField.Link] {

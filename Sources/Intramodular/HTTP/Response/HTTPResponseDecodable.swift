@@ -9,7 +9,7 @@ public protocol HTTPResponseDecodable {
     init(from response: HTTPResponse) throws
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPResponse: HTTPResponseDecodable {
     public init(from response: HTTPResponse) {

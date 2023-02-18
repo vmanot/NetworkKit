@@ -10,7 +10,7 @@ protocol HTTPRequestMultipartContentEntity: CustomStringConvertible {
     var body: Data { get }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension HTTPRequestMultipartContentEntity {
     /// Sets an attribute for a header field, like the "name" attribute for the Content-Disposition header.

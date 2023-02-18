@@ -11,7 +11,7 @@ public protocol HTTPClient: Client where Session.Request == HTTPRequest {
     associatedtype SessionCache = HTTPCache
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 private var _HTTPClient_session_objcAssociationKey: UInt8 = 0
 private var _HTTPClient_sessionCache_objcAssociationKey: UInt8 = 0

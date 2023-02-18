@@ -12,7 +12,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension HTTPRequest.Error: CustomDebugStringConvertible {
     public var debugDescription: String {

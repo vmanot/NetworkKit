@@ -11,7 +11,7 @@ public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
     
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 @propertyWrapper
 open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:

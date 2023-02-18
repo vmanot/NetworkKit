@@ -49,7 +49,7 @@ extension HTTPRequest.Multipart {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension Array where Iterator.Element == HTTPRequest.Multipart.HeaderField {
     subscript(key: HTTPHeaderField.Key) -> HTTPRequest.Multipart.HeaderField? {
