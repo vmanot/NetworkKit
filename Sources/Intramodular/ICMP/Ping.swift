@@ -13,7 +13,7 @@ public struct Ping {
 }
 
 extension Ping {
-    public struct Destination {
+    public struct Destination: Sendable {
         /// The host name, can be a IP address or a URL.
         let host: String
         /// IPv4 address of the host.
@@ -27,7 +27,7 @@ extension Ping {
 
 extension Ping {
     /// Controls pinging behaviour.
-    public struct Configuration {
+    public struct Configuration: Sendable {
         /// The time between consecutive pings in seconds.
         let pingInterval: TimeInterval
         /// Timeout interval in seconds.

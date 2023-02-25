@@ -7,28 +7,19 @@ import Foundation
 import Merge
 import Swallow
 
-public final class HTTPSession: Identifiable, Initiable, RequestSession {
-    public let cancellables = Cancellables()
-    
-    public private(set) var id = UUID()
-    
+public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendable {
     public static let shared = HTTPSession(base: URLSession.shared)
-    
-    private var base: URLSession {
-        didSet {
-            id = .init()
-        }
-    }
+
+    public let cancellables = Cancellables()
+    public let id: UUID
+    private let base: URLSession
     
     public var configuration: URLSessionConfiguration {
-        get {
-            base.configuration
-        } set {
-            base = .init(configuration: newValue)
-        }
+        base.configuration
     }
     
     fileprivate init(base: URLSession) {
+        self.id = UUID()
         self.base = base
     }
     

@@ -13,26 +13,28 @@ import Merge
 import UIKit
 #endif
 
-public class Pinger: MutexProtected {
+public final class Pinger: _MutexProtectedType, @unchecked Sendable {
     public let mutex = DispatchMutexDevice()
+    
     public let output = PassthroughSubject<Ping.Response, Never>()
     
     /// The destination to ping.
     public let destination: Ping.Destination
     /// The configuration of the pinger.
     public let configuration: Ping.Configuration
-    /// The number of pings to make. Default is `nil`, which means no limit.
-    public var targetCount: Int?
     
-    @MutexProtectedValue
+    /// The number of pings to make. Default is `nil`, which means no limit.
+    public var targetCount: Int? = nil
+    
+    @MutexProtected
     private var killswitch = false
-    @MutexProtectedValue
+    @MutexProtected
     private var sequenceIndex = 0
-    @MutexProtectedValue
+    @MutexProtected
     private var isPinging = false
-    @MutexProtectedValue
+    @MutexProtected
     private var timeoutTimer: Timer? = nil
-    @MutexProtectedValue
+    @MutexProtected
     private var wasHaltedByApplicationStageChange = false
     
     /// A random identifier which is a part of the ping request.
