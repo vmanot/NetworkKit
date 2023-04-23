@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.7
 
 import PackageDescription
 
@@ -11,12 +11,17 @@ let package = Package(
         .watchOS(.v6)
     ],
     products: [
-        .library(name: "NetworkKit", targets: ["NetworkKit"])
+        .library(
+            name: "NetworkKit",
+            targets: [
+                "NetworkKit"
+            ]
+        )
     ],
     dependencies: [
-        .package(url: "https://github.com/vmanot/API.git", .branch("master")),
-        .package(url: "https://github.com/vmanot/Merge.git", .branch("master")),
-        .package(url: "https://github.com/vmanot/Swallow.git", .branch("master")),
+        .package(url: "https://github.com/vmanot/API.git", branch: "master"),
+        .package(url: "https://github.com/vmanot/Merge.git", branch: "master"),
+        .package(url: "https://github.com/vmanot/Swallow.git", branch: "master"),
     ],
     targets: [
         .target(
