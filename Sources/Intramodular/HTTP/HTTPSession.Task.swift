@@ -35,11 +35,7 @@ extension HTTPSession.Task {
     public var objectWillChange: AnyPublisher<TaskStatus<Data, Error>, Never> {
         _statusSubject.eraseToAnyPublisher()
     }
-    
-    public var progress: Progress {
-        base?.progress ?? .init()
-    }
-    
+        
     public func start() {
         do {
             let dataTask = try session.bridgeToObjectiveC().dataTask(with: .init(request))
