@@ -4,6 +4,7 @@
 
 #if os(iOS) || os(macOS) || os(tvOS) || targetEnvironment(macCatalyst)
 
+import Foundation
 import Darwin
 import Swift
 

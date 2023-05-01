@@ -4,6 +4,7 @@
 
 import API
 import Merge
+import ObjectiveC
 import Swift
 
 public protocol HTTPClient: Client where Session.Request == HTTPRequest {

@@ -3,6 +3,7 @@
 //
 
 import API
+import Foundation
 import Swallow
 
 public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
