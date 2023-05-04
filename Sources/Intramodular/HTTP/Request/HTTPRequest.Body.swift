@@ -46,6 +46,27 @@ extension HTTPRequest {
     }
 }
 
+// MARK: - Conformances
+
+extension HTTPRequest.Body: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        do {
+            guard header.isEmpty else {
+                return Metatype(Self.self).name
+            }
+            
+            switch content {
+                case .data(let data):
+                    return try data.toString()
+                case .inputStream:
+                    return "Input Stream"
+            }
+        } catch {
+            return Metatype(Self.self).name
+        }
+    }
+}
+
 // MARK: - Helpers
 
 extension HTTPRequest {
