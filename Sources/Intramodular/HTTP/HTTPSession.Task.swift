@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Foundation
 import Merge
 import Swallow
+import SwiftAPI
 
 extension HTTPSession {
     public final class Task: NSObject, Merge.ObservableTask, URLSessionTaskDelegate {

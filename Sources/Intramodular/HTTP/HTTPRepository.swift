@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Merge
 import ObjectiveC
-import Swift
+import Swallow
+import SwiftAPI
 
 public protocol HTTPClient: Client where Session.Request == HTTPRequest {
     associatedtype Session = HTTPSession

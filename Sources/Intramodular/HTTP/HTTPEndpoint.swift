@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Foundation
 import Merge
 import Swallow
+import SwiftAPI
 
 public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
     

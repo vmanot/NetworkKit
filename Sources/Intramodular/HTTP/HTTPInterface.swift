@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Foundation
 import Merge
-import Swift
+import Swallow
+import SwiftAPI
 
 public protocol HTTPInterface: ProgramInterface where Request == HTTPRequest {
     var host: URL { get }

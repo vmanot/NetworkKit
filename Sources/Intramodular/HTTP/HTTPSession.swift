@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Foundation
 import Merge
 import Swallow
+import SwiftAPI
 
 public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendable {
     public static let shared = HTTPSession(base: URLSession.shared)

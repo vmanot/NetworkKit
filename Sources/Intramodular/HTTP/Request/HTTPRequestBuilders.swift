@@ -2,9 +2,9 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Foundation
 import Swallow
+import SwiftAPI
 
 public protocol HTTPEndpointBuilderPropertyWrapper: EndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
     

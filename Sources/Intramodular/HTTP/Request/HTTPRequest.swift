@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import API
 import Combine
 import Foundation
-import Swift
+import Swallow
+import SwiftAPI
 
 /// An encapsulation of a HTTP request.
 public struct HTTPRequest: Codable, Request, Sendable {
