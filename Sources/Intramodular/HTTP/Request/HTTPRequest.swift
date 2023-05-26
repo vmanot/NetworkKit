@@ -122,11 +122,11 @@ extension HTTPRequest {
         then({ $0.header = $0.header.filter({ $0.key != header }) })
     }
     
-    public func body(_ body: HTTPRequest.Body) -> Self {
+    public func body(_ body: HTTPRequest.Body?) -> Self {
         then {
             $0.body = body
             
-            if $0.method == nil {
+            if body != nil && $0.method == nil {
                 $0.method = .post
             }
         }
