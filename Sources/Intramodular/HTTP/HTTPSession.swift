@@ -9,7 +9,7 @@ import SwiftAPI
 
 public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendable {
     public static let shared = HTTPSession(base: URLSession.shared)
-
+    
     public let cancellables = Cancellables()
     public let id: UUID
     private let base: URLSession
@@ -27,7 +27,9 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendabl
         self.init(base: .init(configuration: .default))
     }
     
-    public func task(with request: HTTPRequest) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
+    public func task(
+        with request: HTTPRequest
+    ) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
         do {
             return try base
                 .dataTaskPublisher(for: request)
