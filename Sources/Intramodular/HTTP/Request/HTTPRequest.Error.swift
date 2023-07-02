@@ -2,13 +2,29 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Diagnostics
 import Foundation
-import Swift
+import Swallow
 
 extension HTTPRequest {
-    public enum Error: Swift.Error {
+    public enum Error: _ErrorX {
         case badRequest(HTTPResponse)
-        case system(Swift.Error)
+        case system(AnyError)
+        
+        public var traits: ErrorTraits {
+            let base: ErrorTraits =  [.domain(.networking)]
+            
+            switch self {
+                case .badRequest:
+                    return base // FIXME!
+                case .system(let error):
+                    return base + error.traits
+            }
+        }
+        
+        public init?(_catchAll error: AnyError) throws {
+            self = .system(error)
+        }
     }
 }
 

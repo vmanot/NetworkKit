@@ -34,10 +34,10 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendabl
             return try base
                 .dataTaskPublisher(for: request)
                 .map({ HTTPRequest.Response(data: $0.data, cocoaURLResponse: $0.response as! HTTPURLResponse) })
-                .mapError(HTTPRequest.Error.system)
+                .mapError({ HTTPRequest.Error.system(.init(erasing: $0)) })
                 .convertToTask()
         } catch {
-            return .failure(HTTPRequest.Error.system(error))
+            return .failure(HTTPRequest.Error.system(.init(erasing: error)))
         }
     }
 }

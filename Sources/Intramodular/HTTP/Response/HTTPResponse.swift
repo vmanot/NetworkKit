@@ -6,7 +6,7 @@ import Combine
 import FoundationX
 import Swallow
 
-public struct HTTPResponse: Codable {
+public struct HTTPResponse: Codable, Hashable, Sendable {
     public let data: Data
     @NSKeyedArchived
     var cocoaURLResponse: HTTPURLResponse

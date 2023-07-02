@@ -7,18 +7,23 @@ import Merge
 import Swallow
 import SwiftAPI
 
-public protocol HTTPInterface: ProgramInterface where Request == HTTPRequest {
+public protocol HTTPAPISpecification: APISpecification where Request == HTTPRequest {
     var host: URL { get }
     var baseURL: URL { get }
 }
 
-public protocol RESTfulHTTPInterface: HTTPInterface, RESTfulInterface {
+public protocol RESTAPISpecification: HTTPAPISpecification, RESTfulInterface {
     
 }
 
+@available(*, deprecated, renamed: "APISpecification")
+public typealias HTTPInterface = HTTPAPISpecification
+@available(*, deprecated, renamed: "APISpecification")
+public typealias RESTfulHTTPInterface = RESTAPISpecification
+
 // MARK: - Implementation
 
-extension HTTPInterface {
+extension HTTPAPISpecification {
     public var baseURL: URL {
         host
     }

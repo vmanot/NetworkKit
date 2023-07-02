@@ -35,6 +35,10 @@ extension HTTPSession.Task {
     public var objectWillChange: AnyPublisher<TaskStatus<Data, Error>, Never> {
         _statusSubject.eraseToAnyPublisher()
     }
+    
+    public var objectDidChange: AnyPublisher<TaskStatus<Data, Error>, Never> {
+        _statusSubject.eraseToAnyPublisher() // FIXME!!!
+    }
         
     public func start() {
         do {
@@ -48,18 +52,6 @@ extension HTTPSession.Task {
         } catch {
             _statusSubject.send(.error(error))
         }
-    }
-    
-    public func pause() throws {
-        base?.suspend()
-        
-        _statusSubject.send(.paused)
-    }
-    
-    public func resume() throws {
-        base?.resume()
-        
-        _statusSubject.send(.active)
     }
     
     public func cancel() {

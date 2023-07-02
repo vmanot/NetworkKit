@@ -527,7 +527,7 @@ public struct HTTPRequestBuilders {
     }
 }
 
-extension HTTPInterface {
+extension HTTPAPISpecification {
     public typealias Host<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetHost<Base> where Base.Root == Self
     public typealias Path<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetPath<Base> where Base.Root == Self
     public typealias AbsolutePath<Base: ModifiableEndpoint> = HTTPRequestBuilders.SetAbsolutePath<Base> where Base.Root == Self

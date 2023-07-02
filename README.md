@@ -39,7 +39,7 @@ These decorators can be composed together to declare the configuration for an AP
 Here is a sample NetworkKit interface for the GIPHY API:
 
 ```swift
-public struct GIPHY_API: RESTfulHTTPInterface {
+public struct GIPHY_API: RESTAPISpecification {
     public var apiKey: String
     public var host = URL(string: "https://api.giphy.com")!
     

@@ -7,14 +7,14 @@ import Merge
 import Swallow
 import SwiftAPI
 
-public protocol HTTPEndpoint: Endpoint where Root: HTTPInterface {
+public protocol HTTPEndpoint: Endpoint where Root: HTTPAPISpecification {
     
 }
 
 // MARK: - Conformances
 
 @propertyWrapper
-open class BaseHTTPEndpoint<Root: HTTPInterface, Input, Output, Options>:
+open class BaseHTTPEndpoint<Root: HTTPAPISpecification, Input, Output, Options>:
     ModifiableEndpointBase<Root, Input, Output, Options>, HTTPEndpoint {
     open override var wrappedValue: ModifiableEndpointBase<Root, Input, Output, Options> {
         self
