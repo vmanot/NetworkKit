@@ -8,6 +8,7 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
     case json
     case xml
     case eventStream
+    case octetStream
     case anything
     case custom(String)
     
@@ -19,6 +20,9 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 return "application/xml"
             case .eventStream:
                 return "text/event-stream"
+            case .octetStream:
+                return "application/octet-stream"
+                
             case .anything:
                 return "*/*"
             case .custom(let value):
@@ -34,6 +38,8 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 self = .xml
             case Self.eventStream.rawValue:
                 self = .eventStream
+            case Self.octetStream.rawValue:
+                self = .octetStream
             case Self.anything.rawValue:
                 self = .anything
             default:

@@ -28,4 +28,11 @@ extension HTTPRequest {
                 )
             )
     }
+    
+    public func body(
+        _ type: HTTPRequest.Multipart.Content.Subtype,
+        _ data: [HTTPRequest.Multipart.Part]
+    ) -> Self {
+        self.body(HTTPRequest.Multipart.Content(type: type, parts: data))
+    }
 }

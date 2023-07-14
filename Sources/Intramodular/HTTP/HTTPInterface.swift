@@ -16,9 +16,9 @@ public protocol RESTAPISpecification: HTTPAPISpecification, RESTfulInterface {
     
 }
 
-@available(*, deprecated, renamed: "APISpecification")
+@available(*, deprecated, renamed: "HTTPAPISpecification")
 public typealias HTTPInterface = HTTPAPISpecification
-@available(*, deprecated, renamed: "APISpecification")
+@available(*, deprecated, renamed: "RESTAPISpecification")
 public typealias RESTfulHTTPInterface = RESTAPISpecification
 
 // MARK: - Implementation

@@ -33,7 +33,10 @@ extension HTTPRequest.Multipart.Part {
     /// Multipart containers.
     /// - Parameter name: Field name from the form.
     /// - Parameter value: Value from the form field.
-    public static func formData(name: String, value: String) -> Self {
+    public static func formData(
+        name: String,
+        value: String
+    ) -> Self {
         var part = Self(body: value)
         
         part.setValue("form-data", for: .contentDisposition)
@@ -50,8 +53,8 @@ extension HTTPRequest.Multipart.Part {
     public static func formData(
         name: String,
         fileData: Data,
-        fileName: String? = nil,
-        contentType: String? = nil
+        fileName: String?,
+        contentType: String?
     ) -> Self {
         var part = Self(body: fileData)
         
@@ -67,6 +70,20 @@ extension HTTPRequest.Multipart.Part {
         }
         
         return part
+    }
+    
+    public static func file(
+        _ data: Data,
+        contentType: HTTPMediaType,
+        fileName: String,
+        forField field: String
+    ) -> Self {
+        self.formData(
+            name: field,
+            fileData: data,
+            fileName: fileName,
+            contentType: contentType.rawValue
+        )
     }
 }
 
