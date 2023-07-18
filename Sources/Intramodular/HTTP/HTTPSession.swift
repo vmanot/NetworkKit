@@ -18,7 +18,7 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendabl
         base.configuration
     }
     
-    fileprivate init(base: URLSession) {
+    public init(base: URLSession) {
         self.id = UUID()
         self.base = base
     }
