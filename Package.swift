@@ -31,7 +31,8 @@ let package = Package(
                 "Swallow",
                 "SwiftAPI",
             ],
-            path: "Sources"
+            path: "Sources",
+            swiftSettings: []
         ),
     ]
 )
