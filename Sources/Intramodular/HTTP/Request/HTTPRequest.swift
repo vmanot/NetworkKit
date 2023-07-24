@@ -153,7 +153,7 @@ extension HTTPRequest {
     }
 }
 
-// MARK: - Supplementary API
+// MARK: - Supplementary
 
 extension HTTPRequest {
     public func dataTask(
