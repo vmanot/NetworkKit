@@ -6,30 +6,23 @@ import Foundation
 import Swallow
 
 extension HTTPRequest {
+    /// Represents the body of an HTTP request.
     public struct Body: Codable, Hashable, Sendable {
-        public enum Content: Codable, Hashable, @unchecked Sendable {
+        /// The types of content that an `HTTPRequest.Body` can contain.
+        public enum Content: Hashable, @unchecked Sendable {
+            /// Raw binary data.
             case data(Data)
+            
+            /// A stream of input data.
             case inputStream(InputStream)
             
+            /// Retrieves the `Data` value if the content is `.data`.
             public var dataValue: Data? {
                 if case let .data(data) = self {
                     return data
                 }
                 
                 return nil
-            }
-            
-            public init(from decoder: Decoder) throws {
-                self = .data(try decoder.singleValueContainer().decode(Data.self))
-            }
-            
-            public func encode(to encoder: Encoder) throws {
-                switch self {
-                    case .data(let data):
-                        try data.encode(to: encoder)
-                    case .inputStream(let stream):
-                        throw EncodingError.invalidValue(stream, EncodingError.Context(codingPath: [], debugDescription: "Cannot encode an InputStream"))
-                }
             }
         }
         
@@ -39,14 +32,39 @@ extension HTTPRequest {
         public var data: Data? {
             content.dataValue
         }
-        
-        public static func data(_ data: Data) -> Self {
-            .init(header: [], content: .data(data))
-        }
+    }
+}
+
+// MARK: - Initializers
+
+extension HTTPRequest.Body {
+    /// Create a request body with the given data.
+    public static func data(_ data: Data) -> Self {
+        Self(header: [], content: .data(data))
+    }
+    
+    /// Create a request body the given data and headers.
+    public static func data(_ data: Data, headers: [HTTPHeaderField]) -> Self {
+        Self(header: headers, content: .data(data))
     }
 }
 
 // MARK: - Conformances
+
+extension HTTPRequest.Body.Content: Codable {
+    public init(from decoder: Decoder) throws {
+        self = .data(try decoder.singleValueContainer().decode(Data.self))
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        switch self {
+            case .data(let data):
+                try data.encode(to: encoder)
+            case .inputStream(let stream):
+                throw EncodingError.invalidValue(stream, EncodingError.Context(codingPath: [], debugDescription: "Cannot encode an InputStream"))
+        }
+    }
+}
 
 extension HTTPRequest.Body: CustomDebugStringConvertible {
     public var debugDescription: String {
@@ -67,9 +85,19 @@ extension HTTPRequest.Body: CustomDebugStringConvertible {
     }
 }
 
-// MARK: - Helpers
+// MARK: - Supplementary
 
 extension HTTPRequest {
+    /// Creates a JSON-based query.
+    ///
+    /// - Parameters:
+    ///   - value: An `Encodable` object to encode into a query.
+    ///   - dateEncodingStrategy: Optional date encoding strategy.
+    ///   - dataEncodingStrategy: Optional data encoding strategy.
+    ///   - keyEncodingStrategy: Optional key encoding strategy.
+    ///   - nonConformingFloatEncodingStrategy: Optional non-conforming float encoding strategy.
+    /// - Throws: An error if encoding fails.
+    /// - Returns: An `HTTPRequest` instance with the JSON query set.
     public func jsonQuery<T: Encodable>(
         _ value: T,
         dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
@@ -97,7 +125,17 @@ extension HTTPRequest {
         
         return query(queryItems)
     }
-        
+    
+    /// Sets a JSON-encoded body.
+    ///
+    /// - Parameters:
+    ///   - value: An `Encodable` object to encode into the body.
+    ///   - dateEncodingStrategy: Optional date encoding strategy.
+    ///   - dataEncodingStrategy: Optional data encoding strategy.
+    ///   - keyEncodingStrategy: Optional key encoding strategy.
+    ///   - nonConformingFloatEncodingStrategy: Optional non-conforming float encoding strategy.
+    /// - Throws: An error if encoding fails.
+    /// - Returns: An `HTTPRequest` instance with the JSON body set.
     public func jsonBody<T: Encodable>(
         _ value: T,
         dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
@@ -115,7 +153,14 @@ extension HTTPRequest {
         return body(try encoder.encode(value)).header(.contentType(.json))
     }
     
-    public func jsonBody(_ value: [String: Any?]) throws -> Self {
+    /// Sets a JSON-encoded body using a dictionary.
+    ///
+    /// - Parameter value: A `[String: Any?]` dictionary to encode into the body.
+    /// - Throws: An error if serialization fails.
+    /// - Returns: An `HTTPRequest` instance with the JSON body set.
+    public func jsonBody(
+        _ value: [String: Any?]
+    ) throws -> Self {
         body(
             try JSONSerialization.data(
                 withJSONObject: value.compactMapValues({ $0 }),
@@ -124,6 +169,16 @@ extension HTTPRequest {
         )
     }
     
+    /// Sets a JSON-encoded body using generic type T.
+    ///
+    /// - Parameters:
+    ///   - value: An object to encode into the body.
+    ///   - dateEncodingStrategy: Optional date encoding strategy.
+    ///   - dataEncodingStrategy: Optional data encoding strategy.
+    ///   - keyEncodingStrategy: Optional key encoding strategy.
+    ///   - nonConformingFloatEncodingStrategy: Optional non-conforming float encoding strategy.
+    /// - Throws: An error if encoding fails.
+    /// - Returns: An `HTTPRequest` instance with the JSON body set.
     public func jsonBody<T>(
         _ value: T,
         dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
