@@ -65,6 +65,15 @@ public enum HTTPHeaderField: Hashable, Sendable {
             self = .custom(key: String(describing: key), value: String(describing: value))
         }
     }
+    
+    public static func custom(key: String, value: String?) -> Self? {
+        guard let value else {
+            return nil
+        }
+        
+        return .custom(key: key, value: value)
+    }
+
 }
 
 extension HTTPHeaderField {

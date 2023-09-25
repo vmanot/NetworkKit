@@ -106,8 +106,12 @@ extension HTTPRequest {
         then({ $0.header.append(contentsOf: header) })
     }
     
-    public func header(_ field: HTTPHeaderField) -> Self {
-        then {
+    public func header(_ field: HTTPHeaderField?) -> Self {
+        guard let field else {
+            return self 
+        }
+        
+        return then {
             if !$0.header.contains(field) {
                 $0.header.append(field)
             }
