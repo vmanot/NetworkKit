@@ -7,6 +7,9 @@ import ObjectiveC
 import Swallow
 import SwiftAPI
 
+@available(*, deprecated, renamed: "HTTPClient")
+public typealias HTTPRepository = HTTPClient
+
 public protocol HTTPClient: Client where Session.Request == HTTPRequest {
     associatedtype Session = HTTPSession
     associatedtype SessionCache = HTTPCache
