@@ -6,7 +6,6 @@ import Combine
 import FoundationX
 import Merge
 import Swallow
-import AVFoundation
 
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 public actor _AsyncWebSocket {

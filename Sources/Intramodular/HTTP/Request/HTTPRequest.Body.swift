@@ -153,6 +153,31 @@ extension HTTPRequest {
         return body(try encoder.encode(value)).header(.contentType(.json))
     }
     
+    @_disfavoredOverload
+    public func jsonBody(
+        _ value: (any Encodable)?,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        func _makeJSONBody<T>(_ x: T) throws -> Self {
+            try self.jsonBody(
+                x,
+                dateEncodingStrategy: dateEncodingStrategy,
+                dataEncodingStrategy: dataEncodingStrategy,
+                keyEncodingStrategy: keyEncodingStrategy,
+                nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+            )
+        }
+        
+        if let value {
+            return try _openExistential(value, do: _makeJSONBody)
+        } else {
+            return self
+        }
+    }
+
     /// Sets a JSON-encoded body using a dictionary.
     ///
     /// - Parameter value: A `[String: Any?]` dictionary to encode into the body.
