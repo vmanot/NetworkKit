@@ -31,6 +31,10 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendabl
         with request: HTTPRequest
     ) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
         do {
+            if request.method == .get {
+                assert(request.body == nil)
+            }
+            
             return try base
                 .dataTaskPublisher(for: request)
                 .map({ HTTPRequest.Response(data: $0.data, cocoaURLResponse: $0.response as! HTTPURLResponse) })

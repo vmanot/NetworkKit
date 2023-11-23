@@ -47,49 +47,69 @@ public struct HTTPRequest: Codable, Request, Sendable {
 // MARK: - API
 
 extension HTTPRequest {
-    public func host(_ host: URL) -> Self {
+    public func host(
+        _ host: URL
+    ) -> Self {
         then({ $0.host = host })
     }
     
-    public func path(_ path: String) -> Self {
+    public func path(
+        _ path: String
+    ) -> Self {
         then({ $0.path = path })
     }
     
-    public func absolutePath(_ path: String) -> Self {
+    public func absolutePath(
+        _ path: String
+    ) -> Self {
         then {
             $0.host = URL(string: path)!
             $0.path = nil
         }
     }
     
-    public func absolutePath(_ url: URL) -> Self {
+    public func absolutePath(
+        _ url: URL
+    ) -> Self {
         then {
             $0.host = url
             $0.path = nil
         }
     }
     
-    public func `protocol`(_ protocol: HTTPProtocol) -> Self {
+    public func `protocol`(
+        _ protocol: HTTPProtocol
+    ) -> Self {
         then({ $0.protocol = `protocol` })
     }
     
-    public func method(_ method: HTTPMethod) -> Self {
+    public func method(
+        _ method: HTTPMethod
+    ) -> Self {
         then({ $0.method = method })
     }
     
-    public func query(_ items: [URLQueryItem]) -> Self {
+    public func query(
+        _ items: [URLQueryItem]
+    ) -> Self {
         then({ $0.query.append(contentsOf: items) })
     }
     
-    public func query(_ query: [String: String]) -> Self {
+    public func query(
+        _ query: [String: String]
+    ) -> Self {
         then({ $0.query.append(contentsOf: query.map({ URLQueryItem(name: $0.key, value: $0.value) })) })
     }
 
-    public func query(_ query: [String: String?]) -> Self {
+    public func query(
+        _ query: [String: String?]
+    ) -> Self {
         self.query(query.compactMapValues({ $0 }))
     }
     
-    public func query(_ queryString: String) -> Self {
+    public func query(
+        _ queryString: String
+    ) -> Self {
         query(
             queryString.components(separatedBy: "&").map { pair -> URLQueryItem in
                 let value = pair
@@ -102,8 +122,16 @@ extension HTTPRequest {
         )
     }
     
-    public func header(_ header: Header) -> Self {
+    public func header(
+        _ header: Header
+    ) -> Self {
         then({ $0.header.append(contentsOf: header) })
+    }
+    
+    public func headers(
+        _ headers: [String: String]
+    ) -> Self {
+        then({ $0.header.append(contentsOf: headers.map(HTTPHeaderField.init(key:value:))) })
     }
     
     public func header(_ field: HTTPHeaderField?) -> Self {

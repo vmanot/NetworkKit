@@ -376,6 +376,17 @@ public struct HTTPRequestBuilders {
                 request.header(makeHeader(context))
             }
         }
+        
+        public init(
+            wrappedValue: Base,
+            _ headers: [String: String]
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.headers(headers)
+            }
+        }
     }
     
     @propertyWrapper
