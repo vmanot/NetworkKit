@@ -7,23 +7,25 @@ import CorePersistence
 import FoundationX
 import Swallow
 
+/// A modern replacement for the `(Data, HTTPResponse)` tuple.
 public struct HTTPResponse: Codable, Hashable, Sendable {
     public let data: Data
     @NSKeyedArchived
     var cocoaURLResponse: HTTPURLResponse
     
+    /// The response’s HTTP status code.
     public var statusCode: HTTPResponseStatusCode {
         .init(rawValue: cocoaURLResponse.statusCode)
     }
     
+    /// All HTTP header fields of the response.
     public var headerFields: [HTTPHeaderField] {
         cocoaURLResponse
             .allHeaderFields
             .map({ HTTPHeaderField(key: $0, value: $1) })
     }
-}
-
-extension HTTPResponse {
+    
+    /// Throw a Swift error if the response code indicates an error.
     public func validate() throws {
         guard statusCode != .error else {
             throw HTTPRequest.Error.badRequest(self)
@@ -56,7 +58,7 @@ extension HTTPResponse {
             return try type.init(from: self) as! T
         }
         
-        var _decoder = JSONDecoder()
+        let _decoder = JSONDecoder()
         
         if let dateDecodingStrategy = dateDecodingStrategy {
             _decoder.dateDecodingStrategy = dateDecodingStrategy
@@ -88,7 +90,7 @@ extension HTTPResponse {
         if let type = type as? HTTPResponseDecodable.Type {
             return try type.init(from: self) as! T
         } else if headerFields.contains(.contentType(.json)) {
-            return try JSONDecoder().attemptToDecode(type, from: data)
+            return try _ModularTopLevelDecoder(from: JSONDecoder()).attemptToDecode(type, from: data)
         } else {
             throw DecodingError.dataCorrupted(.init(codingPath: []))
         }
@@ -109,16 +111,20 @@ extension HTTPResponse: CustomDebugStringConvertible {
     }
 }
 
-// MARK: - Helpers
+// MARK: - Supplementary
 
 extension HTTPResponse {
-    public init(_ response: CachedURLResponse) throws {
+    public init(
+        _ response: CachedURLResponse
+    ) throws {
         self.init(data: response.data, cocoaURLResponse: try cast(response.response, to: HTTPURLResponse.self))
     }
 }
 
 extension CachedURLResponse {
-    public convenience init(_ response: HTTPResponse) {
+    public convenience init(
+        _ response: HTTPResponse
+    ) {
         self.init(response: response.cocoaURLResponse, data: response.data)
     }
 }

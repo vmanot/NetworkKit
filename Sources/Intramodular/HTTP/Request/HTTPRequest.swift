@@ -134,7 +134,20 @@ extension HTTPRequest {
         then({ $0.header.append(contentsOf: headers.map(HTTPHeaderField.init(key:value:))) })
     }
     
-    public func header(_ field: HTTPHeaderField?) -> Self {
+    public func header(
+        _ key: String,
+        _ value: String?
+    ) -> Self {
+        if let value {
+            header(HTTPHeaderField(key: key, value: value))
+        } else {
+            self
+        }
+    }
+    
+    public func header(
+        _ field: HTTPHeaderField?
+    ) -> Self {
         guard let field else {
             return self 
         }
@@ -241,8 +254,16 @@ extension URLRequest {
 }
 
 extension URLSession {
-    public func dataTaskPublisher(for request: HTTPRequest) throws -> DataTaskPublisher {
+    public func dataTaskPublisher(
+        for request: HTTPRequest
+    ) throws -> DataTaskPublisher {
         try dataTaskPublisher(for: URLRequest(request))
+    }
+    
+    public func data(
+        for request: HTTPRequest
+    ) async throws -> (Data, URLResponse) {
+        try await data(for: URLRequest(request))
     }
 }
 
