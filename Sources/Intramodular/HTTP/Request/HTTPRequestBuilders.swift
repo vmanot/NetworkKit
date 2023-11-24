@@ -204,7 +204,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ query: [String: String]) {
+        public init(
+            wrappedValue: Base,
+            _ query: [String: String]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -212,7 +215,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ query: [String: String?]) {
+        public init(
+            wrappedValue: Base,
+            _ query: [String: String?]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -220,7 +226,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ query: KeyPath<Input, [URLQueryItem]>) {
+        public init(
+            wrappedValue: Base,
+            _ query: KeyPath<Input, [URLQueryItem]>
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -228,7 +237,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ query: KeyPath<Input, String>) {
+        public init(
+            wrappedValue: Base,
+            _ query: KeyPath<Input, String>
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -236,7 +248,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ query: [String: KeyPath<Input, String>]) {
+        public init(
+            wrappedValue: Base,
+            _ query: [String: KeyPath<Input, String>]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -244,7 +259,11 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String>) {
+        public init(
+            wrappedValue: Base,
+            _ name: String,
+            _ getQueryValue: KeyPath<Input, String>
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -252,7 +271,11 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ name: String, _ getQueryValue: KeyPath<Input, String?>) {
+        public init(
+            wrappedValue: Base,
+            _ name: String,
+            _ getQueryValue: KeyPath<Input, String?>
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -260,7 +283,11 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, _ name: String, fromContext keyPath: KeyPath<BuildRequestTransformContext, String?>) {
+        public init(
+            wrappedValue: Base,
+            _ name: String,
+            fromContext keyPath: KeyPath<BuildRequestTransformContext, String?>
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -391,6 +418,10 @@ public struct HTTPRequestBuilders {
     
     @propertyWrapper
     public struct AddBody<Base: ModifiableEndpoint>: HTTPEndpointBuilderPropertyWrapper where Base.Root.Request == HTTPRequest {
+        public enum _Token {
+            case input
+        }
+        
         public var wrappedValue: Base
         
         public init<T: Encodable>(
@@ -414,7 +445,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, json value: [String: Any]) {
+        public init(
+            wrappedValue: Base,
+            json value: [String: Any]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -422,7 +456,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, json value: [String: KeyPath<Mirror.DynamicMemberLookup, Mirror.DynamicMemberLookup.Key>]) {
+        public init(
+            wrappedValue: Base,
+            json value: [String: KeyPath<Mirror.DynamicMemberLookup, Mirror.DynamicMemberLookup.Key>]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -430,7 +467,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init<T>(wrappedValue: Base, json value: [String: KeyPath<Input, T>]) {
+        public init<T>(
+            wrappedValue: Base,
+            json value: [String: KeyPath<Input, T>]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -480,6 +520,27 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init(
+            wrappedValue: Base,
+            json value: _Token,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+            dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+            nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+        ) {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                try request.jsonBody(
+                    context.input,
+                    dateEncodingStrategy: dateEncodingStrategy,
+                    dataEncodingStrategy: dataEncodingStrategy,
+                    keyEncodingStrategy: keyEncodingStrategy,
+                    nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+                )
+            }
+        }
+        
         public init<T0, T1, T2>(
             wrappedValue: Base,
             json key0: String,
@@ -502,7 +563,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any]) {
+        public init(
+            wrappedValue: Base,
+            json value: @escaping (Input) -> [String: Any]
+        ) {
             self.wrappedValue = wrappedValue
             
             self.wrappedValue.addBuildRequestTransform { request, context in
@@ -510,7 +574,10 @@ public struct HTTPRequestBuilders {
             }
         }
         
-        public init(wrappedValue: Base, json value: @escaping (Input) -> [String: Any?]) {
+        public init(
+            wrappedValue: Base,
+            json value: @escaping (Input) -> [String: Any?]
+        ) {
             self.init(wrappedValue: wrappedValue, json: { value($0).compactMapValues({ $0 }) })
         }
         

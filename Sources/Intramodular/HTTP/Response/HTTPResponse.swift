@@ -3,6 +3,7 @@
 //
 
 import Combine
+import CorePersistence
 import FoundationX
 import Swallow
 
@@ -55,23 +56,25 @@ extension HTTPResponse {
             return try type.init(from: self) as! T
         }
         
-        let decoder = JSONDecoder()
+        var _decoder = JSONDecoder()
         
         if let dateDecodingStrategy = dateDecodingStrategy {
-            decoder.dateDecodingStrategy = dateDecodingStrategy
+            _decoder.dateDecodingStrategy = dateDecodingStrategy
         }
         
         if let dataDecodingStrategy = dataDecodingStrategy {
-            decoder.dataDecodingStrategy = dataDecodingStrategy
+            _decoder.dataDecodingStrategy = dataDecodingStrategy
         }
         
         if let nonConformingFloatDecodingStrategy = nonConformingFloatDecodingStrategy {
-            decoder.nonConformingFloatDecodingStrategy = nonConformingFloatDecodingStrategy
+            _decoder.nonConformingFloatDecodingStrategy = nonConformingFloatDecodingStrategy
         }
         
         if let keyDecodingStrategy = keyDecodingStrategy {
-            decoder.keyDecodingStrategy = keyDecodingStrategy
+            _decoder.keyDecodingStrategy = keyDecodingStrategy
         }
+        
+        let decoder = _ModularTopLevelDecoder(from: _decoder)
         
         return try decoder.attemptToDecode(type, from: data)
     }
