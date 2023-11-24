@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import Foundation
 import Swallow
 
@@ -107,19 +108,21 @@ extension HTTPRequest {
     ) throws -> Self {
         TODO.whole(.fix)
         
-        let encoder = JSONEncoder()
+        let _encoder = JSONEncoder()
         
-        dateEncodingStrategy.map(into: &encoder.dateEncodingStrategy)
-        dataEncodingStrategy.map(into: &encoder.dataEncodingStrategy)
-        keyEncodingStrategy.map(into: &encoder.keyEncodingStrategy)
-        nonConformingFloatEncodingStrategy.map(into: &encoder.nonConformingFloatEncodingStrategy)
+        dateEncodingStrategy.map(into: &_encoder.dateEncodingStrategy)
+        dataEncodingStrategy.map(into: &_encoder.dataEncodingStrategy)
+        keyEncodingStrategy.map(into: &_encoder.keyEncodingStrategy)
+        nonConformingFloatEncodingStrategy.map(into: &_encoder.nonConformingFloatEncodingStrategy)
+        
+        let encoder = _ModularTopLevelEncoder(from: _encoder)
         
         let queryItems = try JSONDecoder()
             .decode([String: AnyCodable].self, from: try encoder.encode(value))
             .map {
                 URLQueryItem(
                     name: $0.key,
-                    value: try JSONEncoder().encode($0.value).toString()
+                    value: try encoder.encode($0.value).toString()
                 )
             }
         
@@ -143,12 +146,14 @@ extension HTTPRequest {
         keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
         nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
     ) throws -> Self {
-        let encoder = JSONEncoder()
+        let _encoder = JSONEncoder()
         
-        dateEncodingStrategy.map(into: &encoder.dateEncodingStrategy)
-        dataEncodingStrategy.map(into: &encoder.dataEncodingStrategy)
-        keyEncodingStrategy.map(into: &encoder.keyEncodingStrategy)
-        nonConformingFloatEncodingStrategy.map(into: &encoder.nonConformingFloatEncodingStrategy)
+        dateEncodingStrategy.map(into: &_encoder.dateEncodingStrategy)
+        dataEncodingStrategy.map(into: &_encoder.dataEncodingStrategy)
+        keyEncodingStrategy.map(into: &_encoder.keyEncodingStrategy)
+        nonConformingFloatEncodingStrategy.map(into: &_encoder.nonConformingFloatEncodingStrategy)
+        
+        let encoder = _ModularTopLevelEncoder(from: _encoder)
         
         return body(try encoder.encode(value)).header(.contentType(.json))
     }

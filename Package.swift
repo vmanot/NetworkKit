@@ -1,14 +1,14 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 
 let package = Package(
     name: "NetworkKit",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v11),
-        .tvOS(.v13),
-        .watchOS(.v6)
+        .iOS(.v14),
+        .macOS(.v12),
+        .tvOS(.v14),
+        .watchOS(.v9)
     ],
     products: [
         .library(
@@ -19,6 +19,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),
         .package(url: "https://github.com/vmanot/Merge.git", branch: "master"),
         .package(url: "https://github.com/vmanot/Swallow.git", branch: "master"),
         .package(url: "https://github.com/vmanot/SwiftAPI.git", branch: "master"),
@@ -27,6 +28,7 @@ let package = Package(
         .target(
             name: "NetworkKit",
             dependencies: [
+                "CorePersistence",
                 "Merge",
                 "Swallow",
                 "SwiftAPI",
