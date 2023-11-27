@@ -7,6 +7,7 @@ import Swift
 public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
     case json
     case xml
+    case mpeg
     case eventStream
     case octetStream
     case anything
@@ -18,11 +19,12 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 return "application/json"
             case .xml:
                 return "application/xml"
+            case .mpeg:
+                return "audio/mpeg"
             case .eventStream:
                 return "text/event-stream"
             case .octetStream:
                 return "application/octet-stream"
-                
             case .anything:
                 return "*/*"
             case .custom(let value):
@@ -36,6 +38,8 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 self = .json
             case Self.xml.rawValue:
                 self = .xml
+            case Self.mpeg.rawValue:
+                self = .mpeg
             case Self.eventStream.rawValue:
                 self = .eventStream
             case Self.octetStream.rawValue:

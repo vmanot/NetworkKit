@@ -46,6 +46,34 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, Sendabl
     }
 }
 
+extension HTTPSession {
+    public func data(
+        for request: URLRequest
+    ) async throws -> HTTPResponse {
+        let (data, response) = try await base.data(for: request)
+        
+        let result = try HTTPResponse(
+            data: data,
+            cocoaURLResponse: cast(response, to: HTTPURLResponse.self)
+        )
+        
+        return result
+    }
+    
+    public func data(
+        for request: HTTPRequest
+    ) async throws -> HTTPResponse {
+        let (data, response) = try await base.data(for: request)
+        
+        let result = try HTTPResponse(
+            data: data,
+            cocoaURLResponse: cast(response, to: HTTPURLResponse.self)
+        )
+        
+        return result
+    }
+}
+
 // MARK: - Conformances
 
 extension HTTPSession: ObjectiveCBridgeable {
