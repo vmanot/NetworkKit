@@ -159,7 +159,7 @@ extension HTTPRequest {
     }
     
     @_disfavoredOverload
-    public func jsonBody(
+    public func _jsonBody(
         _ value: (any Encodable)?,
         dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
         dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
@@ -219,7 +219,31 @@ extension HTTPRequest {
         if value is Void {
             return self // FIXME?
         } else if let value = value as? Encodable {
-            return try jsonBody(
+            return try _jsonBody(
+                value,
+                dateEncodingStrategy: dateEncodingStrategy,
+                dataEncodingStrategy: dataEncodingStrategy,
+                keyEncodingStrategy: keyEncodingStrategy,
+                nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+            )
+        } else if _isValueNil(value) {
+            return self
+        } else {
+            assertionFailure("Failed to encode value of type: \(type(of: value)), \(value)")
+            
+            return self
+        }
+    }
+    
+    public func jsonBody(
+        _ value: (any Encodable)?,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        if let value {
+            return try _jsonBody(
                 value,
                 dateEncodingStrategy: dateEncodingStrategy,
                 dataEncodingStrategy: dataEncodingStrategy,
@@ -227,8 +251,6 @@ extension HTTPRequest {
                 nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
             )
         } else {
-            assertionFailure()
-            
             return self
         }
     }
