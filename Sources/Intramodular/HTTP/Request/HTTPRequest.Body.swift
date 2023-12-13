@@ -146,43 +146,15 @@ extension HTTPRequest {
         keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
         nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
     ) throws -> Self {
-        let _encoder = JSONEncoder()
-        
-        dateEncodingStrategy.map(into: &_encoder.dateEncodingStrategy)
-        dataEncodingStrategy.map(into: &_encoder.dataEncodingStrategy)
-        keyEncodingStrategy.map(into: &_encoder.keyEncodingStrategy)
-        nonConformingFloatEncodingStrategy.map(into: &_encoder.nonConformingFloatEncodingStrategy)
-        
-        let encoder = _ModularTopLevelEncoder(from: _encoder)
-        
-        return body(try encoder.encode(value)).header(.contentType(.json))
+        return try _jsonBody(
+            value,
+            dateEncodingStrategy: dateEncodingStrategy,
+            dataEncodingStrategy: dataEncodingStrategy,
+            keyEncodingStrategy: keyEncodingStrategy,
+            nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+        )
     }
     
-    @_disfavoredOverload
-    public func _jsonBody(
-        _ value: (any Encodable)?,
-        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
-        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
-        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
-        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
-    ) throws -> Self {
-        func _makeJSONBody<T>(_ x: T) throws -> Self {
-            try self.jsonBody(
-                x,
-                dateEncodingStrategy: dateEncodingStrategy,
-                dataEncodingStrategy: dataEncodingStrategy,
-                keyEncodingStrategy: keyEncodingStrategy,
-                nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
-            )
-        }
-        
-        if let value {
-            return try _openExistential(value, do: _makeJSONBody)
-        } else {
-            return self
-        }
-    }
-
     /// Sets a JSON-encoded body using a dictionary.
     ///
     /// - Parameter value: A `[String: Any?]` dictionary to encode into the body.
@@ -219,7 +191,7 @@ extension HTTPRequest {
         if value is Void {
             return self // FIXME?
         } else if let value = value as? Encodable {
-            return try _jsonBody(
+            return try _opaque_jsonBody(
                 value,
                 dateEncodingStrategy: dateEncodingStrategy,
                 dataEncodingStrategy: dataEncodingStrategy,
@@ -243,13 +215,56 @@ extension HTTPRequest {
         nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
     ) throws -> Self {
         if let value {
-            return try _jsonBody(
+            return try _opaque_jsonBody(
                 value,
                 dateEncodingStrategy: dateEncodingStrategy,
                 dataEncodingStrategy: dataEncodingStrategy,
                 keyEncodingStrategy: keyEncodingStrategy,
                 nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
             )
+        } else {
+            return self
+        }
+    }
+    
+    private func _jsonBody<T: Encodable>(
+        _ value: T,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        let _encoder = JSONEncoder()
+        
+        dateEncodingStrategy.map(into: &_encoder.dateEncodingStrategy)
+        dataEncodingStrategy.map(into: &_encoder.dataEncodingStrategy)
+        keyEncodingStrategy.map(into: &_encoder.keyEncodingStrategy)
+        nonConformingFloatEncodingStrategy.map(into: &_encoder.nonConformingFloatEncodingStrategy)
+        
+        let encoder = _ModularTopLevelEncoder(from: _encoder)
+        
+        return body(try encoder.encode(value)).header(.contentType(.json))
+    }
+    
+    private func _opaque_jsonBody(
+        _ value: (any Encodable)?,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dataEncodingStrategy: JSONEncoder.DataEncodingStrategy? = nil,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy? = nil,
+        nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy? = nil
+    ) throws -> Self {
+        func _makeJSONBody<T: Encodable>(_ x: T) throws -> Self {
+            try self._jsonBody(
+                x,
+                dateEncodingStrategy: dateEncodingStrategy,
+                dataEncodingStrategy: dataEncodingStrategy,
+                keyEncodingStrategy: keyEncodingStrategy,
+                nonConformingFloatEncodingStrategy: nonConformingFloatEncodingStrategy
+            )
+        }
+        
+        if let value {
+            return try _openExistential(value, do: _makeJSONBody)
         } else {
             return self
         }
