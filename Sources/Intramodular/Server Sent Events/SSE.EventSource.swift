@@ -8,6 +8,8 @@ import Merge
 
 extension ServerSentEvents {
     public final class EventSource {
+        private let queue = TaskQueue()
+        
         public enum ReadyState: Int {
             case none = -1
             case connecting = 0
@@ -90,13 +92,15 @@ extension ServerSentEvents {
         private func handleDelegateUpdates() {
             sessionDelegate.onEvent = { event in
                 self.sessionDelegateTask = Task(priority: .high) {
-                    switch event {
-                        case let .didCompleteWithError(error):
-                            await self.handleSessionError(error)
-                        case let .didReceiveResponse(response, completionHandler):
-                            await self.handleSessionResponse(response, completionHandler: completionHandler)
-                        case let .didReceiveData(data):
-                            await self.parseMessages(from: data)
+                    await self.queue.perform {
+                        switch event {
+                            case let .didCompleteWithError(error):
+                                await self.handleSessionError(error)
+                            case let .didReceiveResponse(response, completionHandler):
+                                await self.handleSessionResponse(response, completionHandler: completionHandler)
+                            case let .didReceiveData(data):
+                                await self.parseMessages(from: data)
+                        }
                     }
                 }
             }
@@ -164,6 +168,8 @@ extension ServerSentEvents {
         public func close() async {
             let previousState = readyState
             
+            await Task.yield()
+
             readyState = .closed
             messageParser.reset()
             sessionDelegateTask?.cancel()
@@ -176,6 +182,8 @@ extension ServerSentEvents {
             if previousState == .open {
                 await events.send(.closed)
             }
+            
+            await Task.yield()
             
             events.finish()
         }
