@@ -58,7 +58,7 @@ public struct HTTPResponseStatusCode: CustomStringConvertible, Hashable {
 }
 
 extension HTTPResponseStatusCode {
-    public init(_ response: HTTPURLResponse) {
+    public init(from response: HTTPURLResponse) {
         self.init(rawValue: response.statusCode)
     }
 }

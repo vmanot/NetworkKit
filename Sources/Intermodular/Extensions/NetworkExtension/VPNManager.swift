@@ -6,7 +6,7 @@
 
 import NetworkExtension
 
-@available(macOS 10.11, *)
+@available(macOS 10.11, tvOS 17.0, *)
 @available(watchOS, unavailable)
 open class VPNManager: ObservableObject {
     private let base: NEVPNManager
@@ -34,7 +34,7 @@ open class VPNManager: ObservableObject {
     }
 }
 
-@available(macOS 10.11, *)
+@available(macOS 10.11, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension VPNManager {
     public var protocolConfiguration: NEVPNProtocol? {
