@@ -7,19 +7,27 @@ import Foundation
 extension SSE.EventSource {
     final class SessionDelegate: NSObject, URLSessionDataDelegate {
         enum Event {
-            case didCompleteWithError(Error?)
-            case didReceiveResponse(URLResponse, (URLSession.ResponseDisposition) -> Void)
-            case didReceiveData(Data)
+            case dataTaskDidComplete(Result<Void, Error>)
+            case dataTaskDidReceiveResponse(URLResponse, (URLSession.ResponseDisposition) -> Void)
+            case dataTaskDidReceiveData(Data)
         }
         
-        var onEvent: (Event) -> Void = { _ in }
+        let onEvent: (Event) -> Void
+        
+        init(onEvent: @escaping (Event) -> Void) {
+            self.onEvent = onEvent
+        }
         
         func urlSession(
             _ session: URLSession,
             task: URLSessionTask,
             didCompleteWithError error: Error?
         ) {
-            onEvent(.didCompleteWithError(error))
+            if let error {
+                onEvent(.dataTaskDidComplete(.failure(error)))
+            } else {
+                onEvent(.dataTaskDidComplete(.success(())))
+            }
         }
         
         func urlSession(
@@ -28,7 +36,7 @@ extension SSE.EventSource {
             didReceive response: URLResponse,
             completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
         ) {
-            onEvent(.didReceiveResponse(response, completionHandler))
+            onEvent(.dataTaskDidReceiveResponse(response, completionHandler))
         }
         
         func urlSession(
@@ -36,7 +44,7 @@ extension SSE.EventSource {
             dataTask: URLSessionDataTask,
             didReceive data: Data
         ) {
-            onEvent(.didReceiveData(data))
+            onEvent(.dataTaskDidReceiveData(data))
         }
     }
 }

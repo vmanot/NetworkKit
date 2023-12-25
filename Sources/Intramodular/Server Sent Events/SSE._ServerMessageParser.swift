@@ -9,7 +9,7 @@ extension SSE {
         public static let lf: UInt8 = 0x0A
         public static let semicolon: UInt8 = 0x3a
         
-        public private(set) var lastMessageId: String = ""
+        public private(set) var lastMessageID: String = ""
         
         public init() {
             
@@ -29,14 +29,14 @@ extension SSE {
             let messages: [ServerSentEvents.ServerMessage] = rawMessages.compactMap(ServerSentEvents.ServerMessage.parse(from:))
             
             if let lastMessageWithId = messages.last(where: { $0.id != nil }) {
-                lastMessageId = lastMessageWithId.id ?? ""
+                lastMessageID = lastMessageWithId.id ?? ""
             }
             
             return messages
         }
         
         public func reset() {
-            lastMessageId = ""
+            lastMessageID = ""
         }
     }
 }

@@ -2,49 +2,59 @@
 // Copyright (c) Vatsal Manot
 //
 
-import AsyncAlgorithms
+import Dispatch
 import Foundation
 import Merge
 
+extension ServerSentEvents.EventSource {
+    @frozen
+    public enum ReadyState {
+        case none
+        case connecting
+        case open
+        case closed
+        case shutdown
+    }
+    
+    @frozen
+    public enum Event: Hashable, Sendable {
+        case error(AnyError)
+        case message(ServerSentEvents.ServerMessage)
+        case open
+        case closed
+    }
+}
+
 extension ServerSentEvents {
     public final class EventSource {
-        private let queue = TaskQueue()
-        
-        public enum ReadyState: Int {
-            case none = -1
-            case connecting = 0
-            case open = 1
-            case closed = 2
-        }
-        
-        @frozen
-        public enum Event: Hashable, Sendable {
-            case error(AnyError)
-            case message(ServerSentEvents.ServerMessage)
-            case open
-            case closed
-        }
-        
         private static let defaultTimeoutInterval: TimeInterval = 300
         
         public private(set) var readyState: ReadyState = .none
         
         public let request: URLRequest
-        public let events: AsyncChannel<Event> = .init()
+        
+        private var events: PassthroughSubject<Event, Never> = .init()
         
         public var maxRetryCount: Int
         public var retryDelay: Double
         
+        private var urlSession: URLSession?
+        private var dataTask: URLSessionDataTask?
+        private var httpResponseErrorStatusCode: HTTPResponseStatusCode?
+
         private let messageParser: SSE._ServerMessageParser
+        private let operationQueue: OperationQueue = withMutableScope(OperationQueue()) {
+            $0.maxConcurrentOperationCount = 1
+        }
         private var currentRetryCount: Int = 1
         
         private var urlSessionConfiguration: URLSessionConfiguration {
-            let configuration = URLSessionConfiguration.default
+            let configuration = URLSessionConfiguration.default.copy() as! URLSessionConfiguration
             
             configuration.httpAdditionalHeaders = [
                 HTTPHeaderField.Key.accept.rawValue: HTTPMediaType.eventStream.rawValue,
-                HTTPHeaderField.Key.cacheControl.rawValue: HTTPCacheControlType.noStore.value,
-                "Last-Event-ID": messageParser.lastMessageId
+                HTTPHeaderField.Key.cacheControl.rawValue: HTTPCacheControlType.noCache.value,
+                "Last-Event-Id": messageParser.lastMessageID
             ]
             
             configuration.timeoutIntervalForRequest = Self.defaultTimeoutInterval
@@ -53,12 +63,16 @@ extension ServerSentEvents {
             return configuration
         }
         
-        private var urlSession: URLSession?
-        private var dataTask: URLSessionDataTask?
-        private var sessionDelegate = SessionDelegate()
-        private var sessionDelegateTask: Task<Void, Error>?
-        private var httpResponseErrorStatusCode: HTTPResponseStatusCode?
-        
+        private lazy var sessionDelegate = SessionDelegate(onEvent: { [weak self] event in
+            guard let `self` = self else {
+                runtimeIssue("Dropped SSE event")
+                
+                return
+            }
+            
+            self.handleEvent(event)
+        })
+                
         public init(
             request: URLRequest,
             messageParser: SSE._ServerMessageParser = .init(),
@@ -70,157 +84,187 @@ extension ServerSentEvents {
             self.maxRetryCount = maxRetryCount
             self.retryDelay = retryDelay
         }
-        
-        public func connect() {
-            guard readyState == .none || readyState == .connecting else {
-                return
-            }
-            
-            urlSession = URLSession(
-                configuration: urlSessionConfiguration,
-                delegate: sessionDelegate,
-                delegateQueue: nil
-            )
-            dataTask = urlSession?.dataTask(with: request)
-            
-            handleDelegateUpdates()
-            
-            dataTask?.resume()
-            readyState = .connecting
-        }
-        
-        private func handleDelegateUpdates() {
-            sessionDelegate.onEvent = { event in
-                self.sessionDelegateTask = Task(priority: .high) {
-                    await self.queue.perform {
-                        switch event {
-                            case let .didCompleteWithError(error):
-                                await self.handleSessionError(error)
-                            case let .didReceiveResponse(response, completionHandler):
-                                await self.handleSessionResponse(response, completionHandler: completionHandler)
-                            case let .didReceiveData(data):
-                                await self.parseMessages(from: data)
-                        }
-                    }
-                }
-            }
-        }
-        
-        private func handleSessionError(_ error: Error?) async {
-            guard readyState != .closed else {
-                await close()
-                
-                return
-            }
-            
-            if let error {
-                await _sendErrorEvent(with: error)
-            }
-            
-            if currentRetryCount < maxRetryCount {
-                currentRetryCount += 1
-                
-                try? await Task.sleep(durationInSeconds: retryDelay)
-                
-                connect()
-            } else {
-                await close()
-            }
-        }
-        
-        private func handleSessionResponse(
-            _ response: URLResponse,
-            completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
-        ) async {
-            guard readyState != .closed else {
-                completionHandler(.cancel)
-                
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completionHandler(.cancel)
-                
-                return
-            }
-            
-            guard httpResponse.statusCode != 204 else {
-                completionHandler(.cancel)
-                
-                await close()
-                
-                return
-            }
-            
-            if 200...299 ~= httpResponse.statusCode {
-                currentRetryCount = 1
-                
-                if readyState != .open {
-                    await _setOpen()
-                }
-            } else {
-                httpResponseErrorStatusCode = HTTPResponseStatusCode(from: httpResponse)
-            }
-            
-            completionHandler(.allow)
-        }
-        
-        public func close() async {
-            let previousState = readyState
-            
-            await Task.yield()
-
-            readyState = .closed
-            messageParser.reset()
-            sessionDelegateTask?.cancel()
-            sessionDelegateTask = nil
-            dataTask?.cancel()
-            dataTask = nil
-            urlSession?.invalidateAndCancel()
-            urlSession = nil
-            
-            if previousState == .open {
-                await events.send(.closed)
-            }
-            
-            await Task.yield()
-            
-            events.finish()
-        }
-        
-        private func parseMessages(from data: Data) async {
-            if let httpResponseErrorStatusCode {
-                self.httpResponseErrorStatusCode = nil
-                
-                await handleSessionError(
-                    EventSourceError.connectionError(statusCode: httpResponseErrorStatusCode, response: data)
-                )
-                
-                return
-            }
-            
-            let messages = messageParser.parsed(from: data)
-            
-            await messages.enumerated().asyncForEach { (index, message) in
-                if (index == messages.count - 1) && (message.data == "[DONE]") == true {
-                    await close()
-                } else {
-                    await events.send(.message(message))
-                }
-            }
-        }
-        
-        fileprivate func _setOpen() async {
-            readyState = .open
-            
-            await events.send(.open)
-        }
-        
-        fileprivate func _sendErrorEvent(with error: Error) async {
-            await events.send(.error(AnyError(erasing: error)))
-        }
     }
 }
+
+extension SSE.EventSource {
+    public func connect() {
+        guard readyState == .none || readyState == .connecting else {
+            return
+        }
+        
+        let urlSession = URLSession(
+            configuration: urlSessionConfiguration,
+            delegate: sessionDelegate,
+            delegateQueue: operationQueue
+        )
+        
+        self.urlSession = urlSession
+        
+        let dataTask = urlSession.dataTask(with: request)
+        
+        self.readyState = .connecting
+        self.dataTask = dataTask
+        
+        dataTask.resume()
+    }
+    
+    fileprivate func handleEvent(
+        _ event: ServerSentEvents.EventSource.SessionDelegate.Event
+    ) {
+        switch event {
+            case let .dataTaskDidComplete(result):
+                self._handleSessionDataTaskCompletion(result)
+            case let .dataTaskDidReceiveResponse(response, completionHandler):
+                self._handleSessionDataTaskResponse(response, completionHandler: completionHandler)
+            case let .dataTaskDidReceiveData(data):
+                self._handleSessionDataTaskData(from: data)
+        }
+    }
+    
+    fileprivate func _handleSessionDataTaskCompletion(
+        _ completion: Result<Void, Error>
+    ) {
+        guard readyState != .closed else {
+            close()
+            
+            return
+        }
+        
+        switch completion {
+            case .success:
+                if currentRetryCount < maxRetryCount {
+                    currentRetryCount += 1
+                    
+                    Task {
+                        try await Task.sleep(durationInSeconds: retryDelay)
+                        
+                        readyState = .connecting
+
+                        connect()
+                    }
+                } else {
+                    close()
+                }
+            case .failure(let error):
+                runtimeIssue(error)
+                
+                _sendErrorEvent(with: error)
+        }
+    }
+    
+    fileprivate func _handleSessionDataTaskResponse(
+        _ response: URLResponse,
+        completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+    ) {
+        guard readyState != .shutdown else {
+            runtimeIssue("Cancelled.")
+            
+            completionHandler(.cancel)
+            
+            return
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            runtimeIssue("Cancelled.")
+            
+            completionHandler(.cancel)
+            
+            return
+        }
+        
+        guard httpResponse.statusCode != 204 else {
+            readyState = .shutdown
+            
+            completionHandler(.cancel)
+            
+            close()
+            
+            return
+        }
+        
+        if 200...299 ~= httpResponse.statusCode {
+            currentRetryCount = 1
+            
+            if readyState != .open {
+                _setOpen()
+            }
+        } else {
+            httpResponseErrorStatusCode = HTTPResponseStatusCode(from: httpResponse)
+        }
+        
+        completionHandler(.allow)
+    }
+    
+    public func close() {
+        let previousState = readyState
+        
+        readyState = .closed
+        messageParser.reset()
+        
+        if previousState == .open {
+            events.send(.closed)
+        }
+        
+        _tearDown()
+    }
+    
+    public func shutdown() {
+        let previousState = readyState
+        
+        readyState = .shutdown
+        messageParser.reset()
+        
+        if previousState == .open {
+            events.send(.closed)
+        }
+        
+        _tearDown()
+    }
+    
+    private func _tearDown() {
+        dataTask?.cancel()
+        dataTask = nil
+        urlSession?.invalidateAndCancel()
+        urlSession = nil
+    }
+    
+    private func _handleSessionDataTaskData(
+        from data: Data
+    ) {
+        if let httpResponseErrorStatusCode {
+            self.httpResponseErrorStatusCode = nil
+            
+            _handleSessionDataTaskCompletion(
+                .failure(
+                    SSE.EventSourceError.connectionError(statusCode: httpResponseErrorStatusCode, response: data)
+                )
+            )
+            
+            return
+        }
+        
+        let messages = messageParser.parsed(from: data)
+        
+        for message in messages {
+            events.send(.message(message))
+        }
+    }
+    
+    fileprivate func _setOpen() {
+        readyState = .open
+        
+        events.send(.open)
+    }
+    
+    fileprivate func _sendErrorEvent(with error: Error) {
+        runtimeIssue(error)
+        
+        events.send(.error(AnyError(erasing: error)))
+    }
+}
+
+// MARK: - Conformances
 
 extension SSE.EventSource: Publisher {
     public typealias Output = SSE.EventSource.Event
@@ -229,10 +273,6 @@ extension SSE.EventSource: Publisher {
     public func receive<S: Subscriber<SSE.EventSource.Event, Never>>(
         subscriber: S
     ) {
-        let publisher = events
-            .eraseToStream()
-            .publisher()
-        
-        publisher.receive(subscriber: subscriber)
+        events.receive(subscriber: subscriber)
     }
 }
