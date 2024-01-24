@@ -19,7 +19,7 @@ extension SSE {
             from data: Data
         ) -> [ServerSentEvents.ServerMessage] {
             let rawMessages: [Data]
-
+            
             if #available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
                 rawMessages = data.split(separator: [Self.lf, Self.lf])
             } else {
@@ -81,10 +81,6 @@ extension SSE.ServerMessage {
 }
 
 extension Data {
-    @available(macOS, deprecated: 13.0, obsoleted: 13.0, message: "This method is not recommended on macOS 13.0+")
-    @available(iOS, deprecated: 16.0, obsoleted: 16.0, message: "This method is not recommended on iOS 16.0+")
-    @available(watchOS, deprecated: 9.0, obsoleted: 9.0, message: "This method is not recommended on watchOS 9.0+")
-    @available(tvOS, deprecated: 16.0, obsoleted: 16.0, message: "This method is not recommended on tvOS 16.0+")
     fileprivate func split(
         by separator: [UInt8]
     ) -> [Data] {
