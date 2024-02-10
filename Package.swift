@@ -34,14 +34,7 @@ let package = Package(
                 "SwiftAPI",
             ],
             path: "Sources",
-            swiftSettings: [
-                .unsafeFlags([
-                    "-Xfrontend",
-                    "-disable-typo-correction",
-                    "-Xfrontend",
-                    "-disable-verify-exclusivity",
-                ])
-            ]
+            swiftSettings: []
         ),
     ]
 )
