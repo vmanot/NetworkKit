@@ -146,6 +146,17 @@ extension HTTPRequest {
     }
     
     public func header(
+        _ key: String,
+        _ value: APIKey?
+    ) -> Self {
+        if let value {
+            header(HTTPHeaderField(key: key, value: value))
+        } else {
+            self
+        }
+    }
+    
+    public func header(
         _ field: HTTPHeaderField?
     ) -> Self {
         guard let field else {

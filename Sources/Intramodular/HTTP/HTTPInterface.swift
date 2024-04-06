@@ -16,6 +16,10 @@ public protocol RESTAPISpecification: HTTPAPISpecification, RESTfulInterface {
     
 }
 
+public protocol _RESTAPIConfiguration: Codable, Hashable, Sendable {
+    
+}
+
 @available(*, deprecated, renamed: "HTTPAPISpecification")
 public typealias HTTPInterface = HTTPAPISpecification
 @available(*, deprecated, renamed: "RESTAPISpecification")

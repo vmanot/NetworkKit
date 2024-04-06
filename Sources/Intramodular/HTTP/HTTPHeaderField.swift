@@ -22,6 +22,10 @@ public enum HTTPHeaderField: Hashable, Sendable {
     
     case custom(key: String, value: String)
     
+    public static func custom(key: String, value: APIKey?) -> Self? {
+        value.map({ Self.custom(key: key, value: $0.value) })
+    }
+    
     public init(key: String, value: String) {
         switch key {
             case Self.Key.accept.rawValue:
