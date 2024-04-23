@@ -3,6 +3,7 @@
 //
 
 import Swift
+import UniformTypeIdentifiers
 
 public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
     case json
@@ -49,5 +50,17 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
             default:
                 self = .custom(rawValue)
         }
+    }
+}
+
+extension HTTPMediaType {
+    public init?(fileURL: URL) {
+        guard let mimeType = fileURL._actuallyStandardizedFileURL._preferredMIMEType else {
+            runtimeIssue("Failed to determine preferred MIME type for file: \(fileURL)")
+            
+            return nil
+        }
+        
+        self = Self(rawValue: mimeType)
     }
 }

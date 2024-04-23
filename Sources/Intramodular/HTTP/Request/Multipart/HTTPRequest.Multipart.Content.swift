@@ -4,12 +4,12 @@
 
 import Combine
 import Foundation
-import Swift
+import Swallow
 
 extension HTTPRequest.Multipart {
     /// Defines a message in which one or more different sets of data are combined according to the MIME standard.
     /// - SeeAlso: Defined in [RFC 2046, Section 5.1](https://tools.ietf.org/html/rfc2046#section-5.1)
-    public struct Content {
+    public struct Content: Initiable {
         static let CRLF = "\r\n"
         static let CRLFData = HTTPRequest.Multipart.Content.CRLF.data(using: .utf8)!
         
@@ -47,11 +47,25 @@ extension HTTPRequest.Multipart {
             self.init(type: type, parts: parts.map({ $0 as HTTPRequestMultipartContentEntity }))
         }
         
-        /// Adds a subpart to the end of the body.
-        /// - Parameter newElement: Part or nested Multipart to append to the body
-        mutating func append(_ newElement: HTTPRequestMultipartContentEntity) {
-            entities.append(newElement)
+        public init(
+            _ parts: [HTTPRequest.Multipart.Part]
+        ) {
+            self.init(type: .formData, parts: parts)
         }
+        
+        public init() {
+            self.init([HTTPRequest.Multipart.Part]())
+        }
+    }
+}
+
+extension HTTPRequest.Multipart.Content {
+    public mutating func append(_ element: HTTPRequest.Multipart.Part) {
+        _append(element)
+    }
+
+    private mutating func _append(_ element: any HTTPRequestMultipartContentEntity) {
+        entities.append(element)
     }
 }
 
@@ -63,24 +77,24 @@ extension HTTPRequest.Multipart.Content: CustomStringConvertible {
         
         if let preamble = self.preamble {
             result += String()
-                + preamble
-                + HTTPRequest.Multipart.Content.CRLF
-                + HTTPRequest.Multipart.Content.CRLF
+            + preamble
+            + HTTPRequest.Multipart.Content.CRLF
+            + HTTPRequest.Multipart.Content.CRLF
         }
         
         if entities.count > 0 {
             for entity in entities {
                 result += String()
-                    + boundary.delimiter
-                    + HTTPRequest.Multipart.Content.CRLF
-                    + entity.description
-                    + HTTPRequest.Multipart.Content.CRLF
+                + boundary.delimiter
+                + HTTPRequest.Multipart.Content.CRLF
+                + entity.description
+                + HTTPRequest.Multipart.Content.CRLF
             }
         } else {
             result += String()
-                + boundary.delimiter
-                + HTTPRequest.Multipart.Content.CRLF
-                + HTTPRequest.Multipart.Content.CRLF
+            + boundary.delimiter
+            + HTTPRequest.Multipart.Content.CRLF
+            + HTTPRequest.Multipart.Content.CRLF
         }
         
         result += self.boundary.distinguishedDelimiter

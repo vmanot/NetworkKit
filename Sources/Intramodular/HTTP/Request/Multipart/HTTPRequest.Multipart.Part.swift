@@ -8,10 +8,18 @@ import Swift
 extension HTTPRequest.Multipart {
     /// A message part that can be added to Multipart containers.
     public struct Part: HTTPRequestMultipartContentEntity {
+        public enum _Charset: String {
+            case utf8 = "utf-8"
+            case ISO_8859_1 = "ISO-8859-1"
+        }
+        
         public var body: Data
         public var headers: [HTTPRequest.Multipart.HeaderField] = []
         
-        public init(body: Data, contentType: String? = nil) {
+        public init(
+            body: Data,
+            contentType: String? = nil
+        ) {
             self.body = body
             
             if let contentType = contentType {
@@ -19,15 +27,24 @@ extension HTTPRequest.Multipart {
             }
         }
         
-        public init(body: String, contentType: String? = nil) {
-            self.init(body: body.data(using: .utf8) ?? Data(), contentType: contentType)
+        public init(
+            body: String,
+            contentType: String? = nil
+        ) {
+            self.init(
+                body: body.data(using: .utf8) ?? Data(),
+                contentType: contentType
+            )
             
-            self.setAttribute(attribute: "charset", value: "utf-8", for: .contentType)
+            self.setAttribute(
+                attribute: "charset",
+                value: _Charset.utf8.rawValue,
+                for: .contentType
+            )
         }
     }
 }
 
-// Helper functions for quick generation of "multipart/form-data" parts.
 extension HTTPRequest.Multipart.Part {
     /// A "multipart/form-data" part containing a form field and its corresponding value, which can be added to
     /// Multipart containers.
@@ -83,6 +100,18 @@ extension HTTPRequest.Multipart.Part {
             fileData: data,
             fileName: fileName,
             contentType: contentType.rawValue
+        )
+    }
+    
+    public static func text(
+        _ value: String,
+        forField field: String
+    ) -> Self {
+        self.formData(
+            name: field,
+            fileData: value.data(using: .utf8)!,
+            fileName: nil,
+            contentType: "text/plain"
         )
     }
 }
