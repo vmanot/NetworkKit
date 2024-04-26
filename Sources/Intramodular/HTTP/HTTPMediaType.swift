@@ -8,9 +8,14 @@ import UniformTypeIdentifiers
 public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
     case json
     case xml
+    case m4a
+    case mp4
     case mpeg
     case eventStream
     case octetStream
+    case webm
+    case wav
+    
     case anything
     case custom(String)
     
@@ -20,12 +25,21 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 return "application/json"
             case .xml:
                 return "application/xml"
+            case .m4a:
+                return "audio/m4a"
+            case .mp4:
+                return "audio/mp4"
             case .mpeg:
                 return "audio/mpeg"
             case .eventStream:
                 return "text/event-stream"
             case .octetStream:
                 return "application/octet-stream"
+            case .webm:
+                return "audio/webm"
+            case .wav:
+                return "audio/wav"
+                
             case .anything:
                 return "*/*"
             case .custom(let value):

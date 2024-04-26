@@ -7,6 +7,10 @@ import Foundation
 import Swallow
 
 extension HTTPRequest.Multipart {
+    public protocol ContentConvertible {
+        func __conversion() throws -> HTTPRequest.Multipart.Content
+    }
+    
     /// Defines a message in which one or more different sets of data are combined according to the MIME standard.
     /// - SeeAlso: Defined in [RFC 2046, Section 5.1](https://tools.ietf.org/html/rfc2046#section-5.1)
     public struct Content: Initiable {
@@ -66,6 +70,10 @@ extension HTTPRequest.Multipart.Content {
 
     private mutating func _append(_ element: any HTTPRequestMultipartContentEntity) {
         entities.append(element)
+    }
+    
+    public enum _PartContent {
+        
     }
 }
 

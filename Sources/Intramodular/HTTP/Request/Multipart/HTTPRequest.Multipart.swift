@@ -13,7 +13,9 @@ extension HTTPRequest {
 // MARK: - Auxiliary
 
 extension HTTPRequest {
-    public func body(_ content: HTTPRequest.Multipart.Content) -> Self {
+    public func body(
+        _ content: HTTPRequest.Multipart.Content
+    ) -> Self {
         self
             .deleteHeader(.contentType)
             .body(

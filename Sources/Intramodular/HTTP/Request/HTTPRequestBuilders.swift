@@ -541,6 +541,19 @@ public struct HTTPRequestBuilders {
             }
         }
         
+        public init(
+            wrappedValue: Base,
+            multipart value: _Token
+        ) where Base.Input: HTTPRequest.Multipart.ContentConvertible {
+            self.wrappedValue = wrappedValue
+            
+            self.wrappedValue.addBuildRequestTransform { request, context -> HTTPRequest in
+                let content: HTTPRequest.Multipart.Content = try context.input.__conversion()
+                
+                return request.body(content)
+            }
+        }
+        
         public init<T0, T1, T2>(
             wrappedValue: Base,
             json key0: String,

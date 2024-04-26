@@ -88,24 +88,24 @@ extension HTTPRequest.Multipart.Part {
         
         return part
     }
-    
+        
     public static func file(
-        _ data: Data,
-        contentType: HTTPMediaType,
-        fileName: String,
-        forField field: String
+        named field: String,
+        data: Data,
+        filename: String,
+        contentType: HTTPMediaType
     ) -> Self {
         self.formData(
             name: field,
             fileData: data,
-            fileName: fileName,
+            fileName: filename,
             contentType: contentType.rawValue
         )
     }
     
     public static func text(
-        _ value: String,
-        forField field: String
+        named field: String,
+        value: String
     ) -> Self {
         self.formData(
             name: field,
@@ -127,5 +127,23 @@ extension HTTPRequest.Multipart.Part: CustomStringConvertible {
         }
         
         return result
+    }
+}
+
+// MARK: - Deprecated
+
+extension HTTPRequest.Multipart.Part {
+    public static func file(
+        _ data: Data,
+        contentType: HTTPMediaType,
+        fileName: String,
+        forField field: String
+    ) -> Self {
+        self.formData(
+            name: field,
+            fileData: data,
+            fileName: fileName,
+            contentType: contentType.rawValue
+        )
     }
 }
