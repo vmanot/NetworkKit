@@ -29,18 +29,21 @@ extension HTTPRequest.Multipart {
         
         public init(
             body: String,
-            contentType: String? = nil
+            contentType: String? = nil,
+            charset: _Charset? = .utf8
         ) {
             self.init(
                 body: body.data(using: .utf8) ?? Data(),
                 contentType: contentType
             )
             
-            self.setAttribute(
-                attribute: "charset",
-                value: _Charset.utf8.rawValue,
-                for: .contentType
-            )
+            if let charset {
+                self.setAttribute(
+                    attribute: "charset",
+                    value: charset.rawValue,
+                    for: .contentType
+                )
+            }
         }
     }
 }
@@ -62,27 +65,26 @@ extension HTTPRequest.Multipart.Part {
         return part
     }
     
-    /// A "multipart/form-data" part containing file data, which can be added to Multipart containers.
-    /// - Parameter name: Field name from the form.
-    /// - Parameter fileData: Complete contents of the file.
-    /// - Parameter fileName: Original local file name of the file.
-    /// - Parameter contentType: MIME Content-Type specifying the nature of the data.
     public static func formData(
         name: String,
-        fileData: Data,
-        fileName: String?,
+        file: Data,
+        filename: String?,
         contentType: String?
     ) -> Self {
-        var part = Self(body: fileData)
+        var part = Self(body: file)
         
         part.setValue("form-data", for: .contentDisposition)
         part.setAttribute(attribute: "name", value: name, for: .contentDisposition)
         
-        if let fileName = fileName {
-            part.setAttribute(attribute: "filename", value: fileName, for: .contentDisposition)
+        if let filename: String = filename {
+            part.setAttribute(
+                attribute: "filename",
+                value: filename,
+                for: .contentDisposition
+            )
         }
         
-        if let contentType = contentType {
+        if let contentType: String = contentType {
             part.setValue(contentType, for: .contentType)
         }
         
@@ -97,8 +99,8 @@ extension HTTPRequest.Multipart.Part {
     ) -> Self {
         self.formData(
             name: field,
-            fileData: data,
-            fileName: filename,
+            file: data,
+            filename: filename,
             contentType: contentType.rawValue
         )
     }
@@ -109,10 +111,22 @@ extension HTTPRequest.Multipart.Part {
     ) -> Self {
         self.formData(
             name: field,
-            fileData: value.data(using: .utf8)!,
-            fileName: nil,
+            file: value.data(using: .utf8)!,
+            filename: nil,
             contentType: "text/plain"
         )
+    }
+    
+    public static func string(
+        named field: String,
+        value: String
+    ) -> Self {
+        var part = Self(body: value, charset: nil)
+        
+        part.setValue("form-data", for: .contentDisposition)
+        part.setAttribute(attribute: "name", value: field, for: .contentDisposition)
+        
+        return part
     }
 }
 
@@ -141,8 +155,8 @@ extension HTTPRequest.Multipart.Part {
     ) -> Self {
         self.formData(
             name: field,
-            fileData: data,
-            fileName: fileName,
+            file: data,
+            filename: fileName,
             contentType: contentType.rawValue
         )
     }
