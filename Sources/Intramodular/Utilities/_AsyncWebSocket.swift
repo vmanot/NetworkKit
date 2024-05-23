@@ -146,7 +146,7 @@ extension _AsyncWebSocket {
         
         messagesContinuation.finish()
         
-        _expectNoThrow {
+        #try(.optimistic) {
             try socketTask.unwrap().cancel(with: .normalClosure, reason: nil)
             
             socketTask = nil
@@ -180,7 +180,7 @@ extension _AsyncWebSocket {
     }
     
     private func receive() {
-        _expectNoThrow {
+        #try(.optimistic) {
             try socketTask.unwrap().receive { [weak self] result in
                 guard let _self = self else {
                     return
