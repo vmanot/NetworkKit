@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import Foundation
 import Merge
 import Swallow
@@ -14,6 +15,7 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
     
     public let cancellables = Cancellables()
     public let id: UUID
+    public var _unsafeFlags: Set<_UnsafeFlag> = []
     
     private var base: URLSession
     
@@ -52,11 +54,30 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
                 
                 return try base
                     .dataTaskPublisher(for: request)
-                    .map({ HTTPRequest.Response(data: $0.data, cocoaURLResponse: $0.response as! HTTPURLResponse) })
-                    .mapError({ HTTPRequest.Error.system(.init(erasing: $0)) })
+                    .map { [weak self] output -> HTTPRequest.Response in
+                        let response = HTTPRequest.Response(
+                            data: output.data,
+                            cocoaURLResponse: output.response as! HTTPURLResponse
+                        )
+                        
+                        if let `self` = self {
+                            if self._unsafeFlags.contains(.dumpRequestBodies) {
+                                #try(.optimistic) {
+                                    let json = try JSON(data: output.data)
+                                    
+                                    print(json.prettyPrintedDescription)
+                                }
+                            }
+                        }
+                        
+                        return response
+                    }
+                    .mapError {
+                        HTTPRequest.Error.system(AnyError(erasing: $0))
+                    }
                     .convertToTask()
             } catch {
-                return .failure(HTTPRequest.Error.system(.init(erasing: error)))
+                return .failure(HTTPRequest.Error.system(AnyError(erasing: error)))
             }
         }
     }
@@ -101,5 +122,13 @@ extension HTTPSession: ObjectiveCBridgeable {
     
     public func bridgeToObjectiveC() throws -> ObjectiveCType {
         base
+    }
+}
+
+// MARK: - Auxiliary
+
+extension HTTPSession {
+    public enum _UnsafeFlag: Codable, Hashable, Sendable {
+        case dumpRequestBodies
     }
 }
