@@ -42,7 +42,7 @@ extension HTTPResponse {
         if let type = type as? HTTPResponseDecodable.Type {
             return try type.init(from: self) as! T
         } else {
-            return try decoder.attemptToDecode(type, from: data)
+            return try decoder._modular().attemptToDecode(type, from: data)
         }
     }
     
@@ -59,6 +59,10 @@ extension HTTPResponse {
         }
         
         let _decoder = JSONDecoder()
+        
+        if #available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *) {
+            _decoder.assumesTopLevelDictionary = false
+        }
         
         if let dateDecodingStrategy = dateDecodingStrategy {
             _decoder.dateDecodingStrategy = dateDecodingStrategy
