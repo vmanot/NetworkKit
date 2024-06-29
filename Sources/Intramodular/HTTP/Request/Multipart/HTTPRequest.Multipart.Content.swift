@@ -64,11 +64,15 @@ extension HTTPRequest.Multipart {
 }
 
 extension HTTPRequest.Multipart.Content {
-    public mutating func append(_ element: HTTPRequest.Multipart.Part) {
+    public mutating func append(
+        _ element: HTTPRequest.Multipart.Part
+    ) {
         _append(element)
     }
 
-    private mutating func _append(_ element: any HTTPRequestMultipartContentEntity) {
+    private mutating func _append(
+        _ element: any HTTPRequestMultipartContentEntity
+    ) {
         entities.append(element)
     }
     
@@ -81,7 +85,7 @@ extension HTTPRequest.Multipart.Content {
 
 extension HTTPRequest.Multipart.Content: CustomStringConvertible {
     public var description: String {
-        var result = self.headers.string() + HTTPRequest.Multipart.Content.CRLF
+        var result = self.headers.headerString() + HTTPRequest.Multipart.Content.CRLF
         
         if let preamble = self.preamble {
             result += String()
@@ -125,7 +129,7 @@ extension HTTPRequest.Multipart.Content: HTTPRequestMultipartContentEntity {
             for entity in entities {
                 data.append(boundary.delimiterData + HTTPRequest.Multipart.Content.CRLFData)
                 
-                if let headerData = entity.headers.data() {
+                if let headerData = entity.headers.headerData() {
                     data.append(headerData)
                 }
                 

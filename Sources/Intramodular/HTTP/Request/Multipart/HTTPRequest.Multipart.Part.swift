@@ -90,7 +90,7 @@ extension HTTPRequest.Multipart.Part {
         
         return part
     }
-        
+    
     public static func file(
         named field: String,
         data: Data,
@@ -116,6 +116,20 @@ extension HTTPRequest.Multipart.Part {
             contentType: "text/plain"
         )
     }
+}
+
+extension HTTPRequest.Multipart.Part {
+    public static func string(
+        _ value: String,
+        forAttribute attribute: HTTPRequest.Multipart.HeaderField.Attribute
+    ) -> Self {
+        var part = Self(body: value, charset: nil)
+        
+        part.setValue("form-data", for: .contentDisposition)
+        part.setAttribute(attribute, named: "name", for: .contentDisposition)
+        
+        return part
+    }
     
     public static func string(
         named field: String,
@@ -132,7 +146,7 @@ extension HTTPRequest.Multipart.Part {
 
 extension HTTPRequest.Multipart.Part: CustomStringConvertible {
     public var description: String {
-        var result = headers.string() + HTTPRequest.Multipart.Content.CRLF
+        var result = headers.headerString() + HTTPRequest.Multipart.Content.CRLF
         
         if let string = String(data: body, encoding: .utf8) {
             result.append(string)

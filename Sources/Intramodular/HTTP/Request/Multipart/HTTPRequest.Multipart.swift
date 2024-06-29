@@ -21,9 +21,9 @@ extension HTTPRequest {
             .body(
                 Body(
                     header: content.headers.map {
-                        .init(
+                        HTTPHeaderField(
                             key: $0.name.rawValue,
-                            value: $0.valueWithAttributes
+                            value: $0.headerValueIncludingAttributes
                         )
                     },
                     content: .data(content.body)

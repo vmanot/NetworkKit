@@ -13,18 +13,17 @@ protocol HTTPRequestMultipartContentEntity: CustomStringConvertible {
 // MARK: - Extensions
 
 extension HTTPRequestMultipartContentEntity {
-    /// Sets an attribute for a header field, like the "name" attribute for the Content-Disposition header.
-    /// If the specified header is not defined for this entity, the attribute is ignored.
-    /// If a value was previously set for the given attribute, that value is replaced with the given value.
     mutating func setAttribute(
-        attribute: String,
-        value: String?,
+        _ attribute: HTTPRequest.Multipart.HeaderField.Attribute?,
+        named attributeName: String,
         for key: HTTPHeaderField.Key
     ) {
-        if let value = value {
-            headers[key]?.attributes[attribute] = value
+        let attributeName = HTTPRequest.Multipart.HeaderField.Attribute.Name(rawValue: attributeName)
+        
+        if let attribute = attribute {
+            headers[key]?.attributes[attributeName] = attribute
         } else {
-            headers[key]?.attributes.removeValue(forKey: attribute)
+            headers[key]?.attributes.removeValue(forKey: attributeName)
         }
     }
     
@@ -37,10 +36,29 @@ extension HTTPRequestMultipartContentEntity {
             if headers[key] != nil {
                 headers[key]?.value = value
             } else {
-                headers.append(.init(name: key, value: value))
+                headers.append(HTTPRequest.Multipart.HeaderField(name: key, value: value))
             }
         } else {
             headers.remove(key)
+        }
+    }
+}
+
+// MARK: - Deprecated
+
+extension HTTPRequestMultipartContentEntity {
+    /// Sets an attribute for a header field, like the "name" attribute for the Content-Disposition header.
+    /// If the specified header is not defined for this entity, the attribute is ignored.
+    /// If a value was previously set for the given attribute, that value is replaced with the given value.
+    mutating func setAttribute(
+        attribute: String,
+        value: String?,
+        for key: HTTPHeaderField.Key
+    ) {
+        if let value = value {
+            headers[key]?.attributes[.init(rawValue: attribute)] = .init(value: value)
+        } else {
+            headers[key]?.attributes.removeValue(forKey: .init(rawValue: attribute))
         }
     }
 }
