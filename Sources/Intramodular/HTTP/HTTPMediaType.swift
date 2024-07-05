@@ -69,7 +69,7 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
 
 extension HTTPMediaType {
     public init?(fileURL: URL) {
-        guard let mimeType = fileURL._actuallyStandardizedFileURL._preferredMIMEType else {
+        guard let mimeType: String = fileURL._actuallyStandardizedFileURL._detectPreferredMIMEType() else {
             runtimeIssue("Failed to determine preferred MIME type for file: \(fileURL)")
             
             return nil
