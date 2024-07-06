@@ -115,7 +115,7 @@ extension SSE.EventSource {
         }
         
         await taskQueue.perform {
-            _connect()
+            _ = _connect()
         }
     }
     
@@ -174,14 +174,15 @@ extension SSE.EventSource {
             return
         }
         
-        func retry() async throws -> Bool {
+        @discardableResult
+        func retry() async -> Bool {
             guard currentRetryCount < maxRetryCount else {
                 return false
                 
             }
             currentRetryCount += 1
             
-            try await Task.sleep(durationInSeconds: retryDelay)
+            try? await Task.sleep(durationInSeconds: retryDelay)
             
             readyState = .connecting
             
@@ -194,9 +195,9 @@ extension SSE.EventSource {
             case .success:
                 await close()
             case .failure(let error):
-                runtimeIssue(error)
-                
                 _sendErrorEvent(with: error)
+                
+                await retry()
         }
     }
     
