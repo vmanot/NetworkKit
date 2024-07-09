@@ -274,6 +274,7 @@ public final class _AsyncWebSocket {
     }
 }
 
+@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 extension _AsyncWebSocket {
     private class SocketTaskDelegate: NSObject, URLSessionWebSocketDelegate {
         private let onTaskOpen: (_ protocol: String?) -> Void
@@ -319,6 +320,7 @@ extension _AsyncWebSocket {
 
 // MARK: - Initializers
 
+@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 extension _AsyncWebSocket {
     public convenience init(
         url: URL,
@@ -342,6 +344,7 @@ extension _AsyncWebSocket {
     }
 }
 
+@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 extension _AsyncWebSocket.Message {
     public func data() throws -> Data {
         switch self {

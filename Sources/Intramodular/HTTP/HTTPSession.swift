@@ -13,6 +13,14 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
     
     public static let shared = HTTPSession(base: URLSession.shared)
     
+    public static var localhost: HTTPSession {
+        let result = HTTPSession(base: URLSession.shared)
+        
+        result._unsafeFlags.insert(.localhost)
+        
+        return result
+    }
+
     public let cancellables = Cancellables()
     public let id: UUID
     public var _unsafeFlags: Set<_UnsafeFlag> = []
@@ -26,6 +34,12 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
     public init(base: URLSession) {
         self.id = UUID()
         self.base = base
+    }
+    
+    public convenience init(host: URL) {
+        self.init(base: .shared)
+        
+        self._unsafeFlags.insert(.host(host))
     }
     
     public func disableTimeouts() {
@@ -46,7 +60,13 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
     public func task(
         with request: HTTPRequest
     ) -> AnyTask<HTTPRequest.Response, HTTPRequest.Error> {
-        lock.withCriticalScope {
+        if let host = _unsafeFlags.first(byUnwrapping: /_UnsafeFlag.host) {
+            if !request.host.absoluteString.hasPrefix(host.absoluteString) {
+                return .failure(.system(Never.Reason.illegal))
+            }
+        }
+        
+        return lock.withCriticalScope {
             do {
                 if request.method == .get {
                     assert(request.body == nil)
@@ -129,6 +149,8 @@ extension HTTPSession: ObjectiveCBridgeable {
 
 extension HTTPSession {
     public enum _UnsafeFlag: Codable, Hashable, Sendable {
+        case localhost
         case dumpRequestBodies
+        case host(URL)
     }
 }

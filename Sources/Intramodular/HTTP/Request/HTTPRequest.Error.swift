@@ -11,6 +11,11 @@ extension HTTPRequest {
         case badRequest(HTTPResponse)
         case system(AnyError)
         
+        @_disfavoredOverload
+        public static func system(_ error: any Swift.Error) -> Self {
+            .system(AnyError(erasing: error))
+        }
+        
         public var traits: ErrorTraits {
             let base: ErrorTraits =  [.domain(.networking)]
             
