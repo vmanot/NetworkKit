@@ -142,7 +142,7 @@ public final class _AsyncWebSocket {
         @_implicitSelfCapture operation: @Sendable @escaping () async throws -> T
     ) async throws -> T {
         try await queue.perform {
-            switch await state {
+            switch state {
                 case .notConnected:
                     try await connect()
                 case .connecting:

@@ -140,7 +140,11 @@ extension SSE.EventSource {
         
         let dataTask = urlSession.dataTask(with: request)
         
-        dataTask.delegate = sessionDelegate
+        if #available(iOS 15.0, *) {
+            dataTask.delegate = sessionDelegate
+        } else {
+            assertionFailure(.unsupported)
+        }
         
         self.readyState = .connecting
         self.dataTask = dataTask
