@@ -7,7 +7,7 @@
 import NetworkExtension
 import Swift
 
-extension NEVPNStatus: CustomStringConvertible {
+extension NEVPNStatus: Swift.CustomStringConvertible {
     public var description: String {
         switch self {
             case .invalid:
