@@ -122,7 +122,7 @@ extension HTTPResponse: CustomDebugStringConvertible {
 
 extension HTTPResponse {
     public init(
-        request: HTTPRequest? = nil,
+        request: HTTPRequest?,
         response: CachedURLResponse
     ) throws {
         self.init(
@@ -130,6 +130,12 @@ extension HTTPResponse {
             data: response.data,
             cocoaURLResponse: try cast(response.response, to: HTTPURLResponse.self)
         )
+    }
+    
+    public init(
+        _ response: CachedURLResponse
+    ) throws {
+        try self.init(request: nil, response: response)
     }
 }
 
