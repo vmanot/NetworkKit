@@ -122,7 +122,7 @@ extension HTTPResponse: CustomDebugStringConvertible {
 
 extension HTTPResponse {
     public init(
-        request: HTTPRequest?,
+        request: HTTPRequest? = nil,
         response: CachedURLResponse
     ) throws {
         self.init(
