@@ -33,13 +33,21 @@ public enum HTTPHeaderField: Hashable, Sendable {
             case Self.Key.authorization.rawValue:
                 self = .authorization(.init(rawValue: key), value)
             case Self.Key.cacheControl.rawValue:
-                TODO.unimplemented
+                if let value = HTTPCacheControlType(rawValue: value) {
+                    self = .cacheControl(value)
+                } else {
+                    fallthrough
+                }
             case Self.Key.connection.rawValue:
-                self = .connection(HTTPConnectionType(rawValue: value)!)
+                if let connection = HTTPConnectionType(rawValue: value) {
+                    self = .connection(connection)
+                } else {
+                    fallthrough
+                }
             case Self.Key.contentDisposition.rawValue:
-                TODO.unimplemented
+                fallthrough // TODO
             case Self.Key.contentLength.rawValue:
-                TODO.unimplemented
+                fallthrough // TODO
             case Self.Key.cookie.rawValue:
                 self = .cookie(value)
             case Self.Key.contentType.rawValue:
@@ -183,7 +191,7 @@ extension HTTPHeaderField {
             case .authorization(let type, let credentials):
                 return "\(type.rawValue) \(credentials)"
             case .cacheControl(let policy):
-                return policy.value
+                return policy.rawValue
             case .connection(let connectionType):
                 return connectionType.rawValue
             case .contentDisposition(let value):

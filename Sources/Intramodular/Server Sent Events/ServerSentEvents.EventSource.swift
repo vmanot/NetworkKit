@@ -70,7 +70,7 @@ extension ServerSentEvents {
             
             configuration.httpAdditionalHeaders = [
                 HTTPHeaderField.Key.accept.rawValue: HTTPMediaType.eventStream.rawValue,
-                HTTPHeaderField.Key.cacheControl.rawValue: HTTPCacheControlType.noCache.value,
+                HTTPHeaderField.Key.cacheControl.rawValue: HTTPCacheControlType.noCache.rawValue,
                 "Last-Event-Id": messageParser.lastMessageID
             ]
             
