@@ -76,6 +76,7 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
                     .dataTaskPublisher(for: request)
                     .map { [weak self] output -> HTTPRequest.Response in
                         let response = HTTPRequest.Response(
+                            request: request,
                             data: output.data,
                             cocoaURLResponse: output.response as! HTTPURLResponse
                         )
@@ -110,6 +111,7 @@ extension HTTPSession {
         let (data, response) = try await base.data(for: request)
         
         let result = try HTTPResponse(
+            request: nil,
             data: data,
             cocoaURLResponse: cast(response, to: HTTPURLResponse.self)
         )
@@ -123,6 +125,7 @@ extension HTTPSession {
         let (data, response) = try await base.data(for: request)
         
         let result = try HTTPResponse(
+            request: request,
             data: data,
             cocoaURLResponse: cast(response, to: HTTPURLResponse.self)
         )

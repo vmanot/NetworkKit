@@ -9,6 +9,9 @@ import Swallow
 
 /// A modern replacement for the `(Data, HTTPResponse)` tuple.
 public struct HTTPResponse: Codable, Hashable, Sendable {
+    @NonCodingProperty
+    public var request: HTTPRequest?
+    
     public let data: Data
     @NSKeyedArchived
     var cocoaURLResponse: HTTPURLResponse
@@ -28,7 +31,7 @@ public struct HTTPResponse: Codable, Hashable, Sendable {
     /// Throw a Swift error if the response code indicates an error.
     public func validate() throws {
         guard statusCode != .error else {
-            throw HTTPRequest.Error.badRequest(self)
+            throw HTTPRequest.Error.badRequest(request: request, response: self)
         }
     }
 }
@@ -119,9 +122,14 @@ extension HTTPResponse: CustomDebugStringConvertible {
 
 extension HTTPResponse {
     public init(
-        _ response: CachedURLResponse
+        request: HTTPRequest?,
+        response: CachedURLResponse
     ) throws {
-        self.init(data: response.data, cocoaURLResponse: try cast(response.response, to: HTTPURLResponse.self))
+        self.init(
+            request: nil,
+            data: response.data,
+            cocoaURLResponse: try cast(response.response, to: HTTPURLResponse.self)
+        )
     }
 }
 

@@ -8,7 +8,7 @@ import Swallow
 
 extension HTTPRequest {
     public enum Error: _ErrorX {
-        case badRequest(HTTPResponse)
+        case badRequest(request: HTTPRequest?, response: HTTPResponse)
         case system(AnyError)
         
         @_disfavoredOverload
@@ -38,8 +38,12 @@ extension HTTPRequest {
 extension HTTPRequest.Error: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
-            case .badRequest(let response):
-                return "Bad request: \(response.statusCode)"
+            case .badRequest(let request, let response):
+                if let request {
+                    return "\(response.statusCode), bad request: \(request)"
+                } else {
+                    return "Bad request: \(response.statusCode)"
+                }
             case .system(let error):
                 return String(describing: error)
         }
