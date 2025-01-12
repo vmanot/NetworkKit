@@ -11,7 +11,7 @@ extension HTTPSession {
     public final class Task: NSObject, Merge.ObservableTask, URLSessionTaskDelegate {
         public typealias Success = Data
         public typealias Error = Swift.Error
-        public typealias Status = TaskStatus<Data, Error>
+        public typealias Status = ObservableTaskStatus<Data, Error>
         
         private var base: URLSessionTask?
         
@@ -32,11 +32,11 @@ extension HTTPSession.Task {
         _statusSubject.value
     }
     
-    public var objectWillChange: AnyPublisher<TaskStatus<Data, Error>, Never> {
+    public var objectWillChange: AnyPublisher<ObservableTaskStatus<Data, Error>, Never> {
         _statusSubject.eraseToAnyPublisher()
     }
     
-    public var objectDidChange: AnyPublisher<TaskStatus<Data, Error>, Never> {
+    public var objectDidChange: AnyPublisher<ObservableTaskStatus<Data, Error>, Never> {
         _statusSubject.eraseToAnyPublisher() // FIXME: !!!
     }
         

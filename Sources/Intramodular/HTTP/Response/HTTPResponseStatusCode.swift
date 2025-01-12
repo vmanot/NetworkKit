@@ -64,17 +64,24 @@ extension HTTPResponseStatusCode {
 }
 
 extension HTTPResponseStatusCode {
-    public enum Comparison {
+    public enum Comparison: ExpressibleByIntegerLiteral {
         case success
         case error
+        case code(Int)
+        
+        public init(integerLiteral value: Int) {
+            self = .code(value)
+        }
     }
     
-    public static func == (lhs: Self, rhs: Comparison) -> Bool {
+    public static func == (lhs: HTTPResponseStatusCode, rhs: Comparison) -> Bool {
         switch rhs {
             case .success:
                 return lhs.codeType == .success
             case .error:
                 return lhs.codeType == .clientError || lhs.codeType == .serverError
+            case .code(let code):
+                return lhs.rawValue == code 
         }
     }
     

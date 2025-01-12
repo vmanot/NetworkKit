@@ -10,12 +10,7 @@ extension HTTPRequest {
     public enum Error: _ErrorX {
         case badRequest(request: HTTPRequest?, response: HTTPResponse)
         case system(AnyError)
-        
-        @_disfavoredOverload
-        public static func system(_ error: any Swift.Error) -> Self {
-            .system(AnyError(erasing: error))
-        }
-        
+                
         public var traits: ErrorTraits {
             let base: ErrorTraits =  [.domain(.networking)]
             
@@ -26,10 +21,37 @@ extension HTTPRequest {
                     return base + error.traits
             }
         }
-        
-        public init?(_catchAll error: AnyError) throws {
-            self = .system(error)
+    }
+}
+
+extension HTTPRequest.Error {
+    public var response: HTTPResponse {
+        get throws {
+            guard case .badRequest(_, let response) = self else {
+                throw Never.Reason.unexpected
+            }
+
+            return response
         }
+    }
+    
+    public var statusCode: HTTPResponseStatusCode {
+        get throws {
+            try response.statusCode
+        }
+    }
+}
+
+// MARK: - Initializers
+
+extension HTTPRequest.Error {
+    @_disfavoredOverload
+    public static func system(_ error: any Swift.Error) -> Self {
+        .system(AnyError(erasing: error))
+    }
+    
+    public init?(_catchAll error: AnyError) throws {
+        self = .system(error)
     }
 }
 
