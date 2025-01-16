@@ -73,7 +73,7 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
-            fromContext value: @escaping (BuildRequestTransformContext) throws -> String
+            _ value: @escaping (BuildRequestTransformContext) throws -> String
         ) {
             self.wrappedValue = wrappedValue
             
@@ -84,7 +84,7 @@ public struct HTTPRequestBuilders {
         
         public init(
             wrappedValue: Base,
-            fromContext value: @escaping (BuildRequestTransformContext) throws -> URL
+            _ value: @escaping (BuildRequestTransformContext) throws -> URL
         ) {
             self.wrappedValue = wrappedValue
             
@@ -423,6 +423,26 @@ public struct HTTPRequestBuilders {
         }
         
         public var wrappedValue: Base
+        
+        public init(
+            wrappedValue: Base,
+            data: Data
+        ) {
+            self.wrappedValue = wrappedValue
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.body(.data(data))
+            }
+        }
+        
+        public init(
+            wrappedValue: Base,
+            data: KeyPath<Input, Data>
+        ) {
+            self.wrappedValue = wrappedValue
+            self.wrappedValue.addBuildRequestTransform { request, context in
+                request.body(.data(context.input[keyPath: data]))
+            }
+        }
         
         public init<T: Encodable>(
             wrappedValue: Base,
