@@ -6,7 +6,7 @@ let package = Package(
     name: "NetworkKit",
     platforms: [
         .iOS(.v14),
-        .macOS(.v12),
+        .macOS(.v13),
         .tvOS(.v14),
         .watchOS(.v9)
     ],
