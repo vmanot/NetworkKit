@@ -7,8 +7,8 @@
 import NetworkExtension
 import Swift
 
-extension NEVPNStatus: Codable {
-    
+extension NEVPNStatus: @retroactive Encodable, @retroactive Decodable {
+
 }
 
 #endif

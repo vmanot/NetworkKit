@@ -10,17 +10,6 @@ extension HTTPRequest {
     public enum Error: _ErrorX {
         case badRequest(request: HTTPRequest?, response: HTTPResponse)
         case system(AnyError)
-                
-        public var traits: ErrorTraits {
-            let base: ErrorTraits =  [.domain(.networking)]
-            
-            switch self {
-                case .badRequest:
-                    return base // FIXME!
-                case .system(let error):
-                    return base + error.traits
-            }
-        }
     }
 }
 
