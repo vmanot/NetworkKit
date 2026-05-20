@@ -36,5 +36,11 @@ let package = Package(
             path: "Sources",
             swiftSettings: []
         ),
+        .testTarget(
+            name: "NetworkKitTests",
+            dependencies: [
+                "NetworkKit",
+            ]
+        ),
     ]
 )

@@ -31,7 +31,10 @@ public enum HTTPHeaderField: Hashable, Sendable {
             case Self.Key.accept.rawValue:
                 self = .accept(.init(rawValue: value))
             case Self.Key.authorization.rawValue:
-                self = .authorization(.init(rawValue: key), value)
+                let parts = value.split(separator: " ", maxSplits: 1)
+                let scheme = parts.first.map(String.init) ?? value
+                let credentials = parts.count > 1 ? String(parts[1]) : ""
+                self = .authorization(.init(rawValue: scheme), credentials)
             case Self.Key.cacheControl.rawValue:
                 if let value = HTTPCacheControlType(rawValue: value) {
                     self = .cacheControl(value)
@@ -133,7 +136,7 @@ extension HTTPHeaderField {
                 case .referer:
                     return "Referer"
                 case .userAgent:
-                    return "UserAgent"
+                    return "User-Agent"
                     
                 case let .custom(value):
                     return value
@@ -203,7 +206,7 @@ extension HTTPHeaderField {
             case .cookie(let value):
                 return value
             case .host(let host, let port):
-                return host + port
+                return host + ":" + port
             case .location(let value):
                 return value.absoluteString
             case .origin(let origin):

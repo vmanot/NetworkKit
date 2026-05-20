@@ -133,8 +133,16 @@ public enum HTTPMediaType: Codable, Hashable, RawRepresentable, Sendable {
                 self = .zip
             case Self.form.rawValue:
                 self = .form
+            case Self.m4a.rawValue:
+                self = .m4a
+            case Self.mp4.rawValue:
+                self = .mp4
             case Self.mpeg.rawValue:
                 self = .mpeg
+            case Self.webm.rawValue:
+                self = .webm
+            case Self.wav.rawValue:
+                self = .wav
             case Self.eventStream.rawValue:
                 self = .eventStream
             case Self.octetStream.rawValue:
