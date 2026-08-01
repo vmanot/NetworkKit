@@ -2,12 +2,11 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Diagnostics
 import Foundation
 import Swallow
 
 extension HTTPRequest {
-    public enum Error: _ErrorX {
+    public enum Error: Swift.Error {
         case badRequest(request: HTTPRequest?, response: HTTPResponse)
         case system(AnyError)
     }
