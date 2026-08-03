@@ -44,6 +44,27 @@ public struct HTTPRequest: Codable, Request, Sendable {
     }
 }
 
+extension HTTPRequest: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        let method: String = self.method?.rawValue ?? "HTTP"
+        guard var components: URLComponents = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+        ) else {
+            return "\(method) <invalid URL>"
+        }
+        components.user = nil
+        components.password = nil
+        components.query = nil
+        components.fragment = nil
+        return "\(method) \(components.string ?? "<invalid URL>")"
+    }
+
+    public var debugDescription: String {
+        description
+    }
+}
+
 // MARK: - API
 
 extension HTTPRequest {

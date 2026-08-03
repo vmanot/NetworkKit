@@ -1,5 +1,5 @@
 {
-  "originHash" : "f429cca9747a78d8b1225eb6df967d444c30d973b0525188803fe4428445dda5",
+  "originHash" : "0639e4b6cf66d9ab877b2581a0195f974d301457e99915144857a98a136ffa0d",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/vmanot/CorePersistence.git",
       "state" : {
         "branch" : "main",
-        "revision" : "1b2d764ed76d2d6bfebb3d47a367d2bb10a43fd6"
+        "revision" : "01a27b551ce395c841cc1b64104d417fe5fc459d"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/vmanot/Merge.git",
       "state" : {
         "branch" : "master",
-        "revision" : "0b0645601b89333b17afa710caec1c6c9e0f782b"
+        "revision" : "69fb8afc6dd432185a27138382dd1452333a6c4c"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/vmanot/Swallow.git",
       "state" : {
         "branch" : "master",
-        "revision" : "330ff6c297bc1c5e319dfd51f4bee15fe8b248f5"
+        "revision" : "ba3fb2833fe06f995e3910aa1f1c8bac342e747f"
       }
     },
     {
@@ -58,10 +58,10 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-precompiled/swift-syntax",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "branch" : "release/6.1",
-        "revision" : "fc197a24fb2e77609fbe3d94624e36f84d758099"
+        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
+        "version" : "603.0.2"
       }
     },
     {
@@ -79,7 +79,7 @@
       "location" : "https://github.com/vmanot/SwiftAPI.git",
       "state" : {
         "branch" : "master",
-        "revision" : "aec84492ddfe23b1514ce0f2ded119d3ce3e94b8"
+        "revision" : "252131cf3b5e4e95cb3e8ed6e2b356b3b49e566c"
       }
     }
   ],

@@ -397,6 +397,18 @@ struct HTTPHeaderFieldTests {
     }
 
     @Test
+    func sensitiveHeaderDebugDescriptionIsRedacted() {
+        #expect(
+            HTTPHeaderField.authorization(.bearer, "mytoken").debugDescription
+                == "Authorization: <redacted>"
+        )
+        #expect(
+            HTTPHeaderField.custom(key: "X-API-Key", value: "secret").debugDescription
+                == "X-API-Key: <redacted>"
+        )
+    }
+
+    @Test
     func hostValueIncludesColon() {
         let field = HTTPHeaderField.host(host: "example.com", port: "8080")
         #expect(field.value == "example.com:8080")
@@ -569,6 +581,18 @@ struct HTTPRequestBuilderTests {
         let request = HTTPRequest(url: URL(string: "https://example.com")!)
             .headers(["X-Api-Key": "abc", "X-Trace-Id": "123"])
         #expect(request.header.count == 2)
+    }
+
+    @Test
+    func descriptionOmitsCredentialsAndRequestData() {
+        let request = HTTPRequest(url: URL(string: "https://user:password@api.example.com")!)
+            .path("repos/example")
+            .query(["access_token": "secret"])
+            .header(.authorization(.bearer, "secret"))
+
+        #expect(request.description == "HTTP https://api.example.com/repos/example")
+        #expect(!request.debugDescription.contains("secret"))
+        #expect(!request.debugDescription.contains("password"))
     }
 
     @Test

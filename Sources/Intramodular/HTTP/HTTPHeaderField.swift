@@ -244,7 +244,22 @@ extension HTTPHeaderField: Codable {
 
 extension HTTPHeaderField: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "\(key.rawValue): \(value)"
+        "\(key.rawValue): \(key.isSensitive ? "<redacted>" : value)"
+    }
+}
+
+extension HTTPHeaderField.Key {
+    fileprivate var isSensitive: Bool {
+        switch self {
+        case .authorization, .cookie:
+            return true
+        case .custom(let key):
+            let key: String = key.lowercased()
+            return ["authorization", "cookie", "token", "api-key", "apikey", "secret"]
+                .contains { key.contains($0) }
+        default:
+            return false
+        }
     }
 }
 
