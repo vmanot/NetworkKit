@@ -49,7 +49,7 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
             sessionConfiguration.timeoutIntervalForRequest = TimeInterval(INT_MAX)
             sessionConfiguration.timeoutIntervalForResource = TimeInterval(INT_MAX)
             
-            self.base = URLSession(configuration: configuration)
+            self.base = URLSession(configuration: sessionConfiguration)
         }
     }
     
@@ -67,39 +67,35 @@ public final class HTTPSession: Identifiable, Initiable, RequestSession, @unchec
         }
         
         return lock.withCriticalScope {
-            do {
-                if request.method == .get {
-                    assert(request.body == nil)
-                }
-                
-                return try base
-                    .dataTaskPublisher(for: request)
-                    .map { [weak self] output -> HTTPRequest.Response in
+            if request.method == .get {
+                assert(request.body == nil)
+            }
+            let urlSession: URLSession = base
+            let dumpsResponseBodies: Bool = _unsafeFlags.contains(.dumpRequestBodies)
+            return PassthroughTask<HTTPRequest.Response, HTTPRequest.Error> { task in
+                let operation = _Concurrency.Task {
+                    do {
+                        let (data, urlResponse) = try await urlSession.data(for: request)
                         let response = HTTPRequest.Response(
                             request: request,
-                            data: output.data,
-                            cocoaURLResponse: output.response as! HTTPURLResponse
+                            data: data,
+                            cocoaURLResponse: try cast(urlResponse, to: HTTPURLResponse.self)
                         )
-                        
-                        if let `self` = self {
-                            if self._unsafeFlags.contains(.dumpRequestBodies) {
-                                #try(.optimistic) {
-                                    let json = try JSON(data: output.data)
-                                    
-                                    print(json.prettyPrintedDescription)
-                                }
+                        if dumpsResponseBodies {
+                            #try(.optimistic) {
+                                print(try JSON(data: data).prettyPrintedDescription)
                             }
                         }
-                        
-                        return response
+                        task.succeed(with: response)
+                    } catch {
+                        task.fail(with: .system(AnyError(erasing: error)))
                     }
-                    .mapError {
-                        HTTPRequest.Error.system(AnyError(erasing: $0))
-                    }
-                    .convertToTask()
-            } catch {
-                return .failure(HTTPRequest.Error.system(AnyError(erasing: error)))
+                }
+                return AnyCancellable {
+                    operation.cancel()
+                }
             }
+            .eraseToAnyTask()
         }
     }
 }
